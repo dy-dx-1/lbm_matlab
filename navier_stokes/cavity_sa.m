@@ -108,16 +108,24 @@ for iter = 1:timesteps
     
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
-    if (mod(iter,10)==0)
+    if (mod(iter,10==0))
         uu = sqrt(u.^2+v.^2) / u_lb;
-%         imagesc(flipud(uu));
-        imagesc(flipud(nut));
-%         imagesc(flipud(omega));
+        imagesc(flipud(uu));
+%       imagesc(flipud(nut)); %%% turbulence viscosity 
+%       imagesc(flipud(omega));
+
+        %%% adding quiver 
+        hold on;
+        [X, Y] = meshgrid(1:11:nodes, 1:11:nodes);
+        sampled_u = u(1:11:end, 1:11:end);
+        sampled_v = v(1:11:end, 1:11:end);
+        quiver(X, Y, flipud(sampled_u), flipud(sampled_v), 'r', 'AutoScale', 'on', 'AutoScaleFactor', 1.5); 
+        %quiver(X, Y, X, -flipud(Y))
+        hold off; 
+        %%% done quiver 
         colorbar
-        axis equal off; drawnow
+        axis equal; 
+        drawnow
     end
 end
 disp('Done!');
-
-
-
