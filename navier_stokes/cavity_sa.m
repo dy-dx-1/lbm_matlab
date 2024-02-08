@@ -11,22 +11,13 @@ clear;close all;clc;
 addpath basic
 addpath bc
 addpath turbulence
-
-% Algorithm steps:
-% Initialize meso (f)
-% Apply meso BCs
-% Determine macro variables and apply macro BCs
-% Loop:
-%   Collide
-%   Apply meso BCs
-%   Stream
-%   Apply meso BCs?
-%   Determine macro variables and apply macro BCs
+addpath verif_assets
 
 % Physical parameters.
 L_p = 4; %1.1; % Cavity dimension. 
 U_p = 1; %1.1; % Cavity lid velocity.
-nu_p = 1.2e-3; % 1.586e-5; % Physical kinematic viscosity.
+Re = 3333; % pour vérification, imposer Re au lieu de nu_p
+%nu_p = 1.2e-3; % 1.586e-5; % Physical kinematic viscosity. % commented pour vérification code 
 rho0 = 1;
 % Discrete/numerical parameters.
 nodes = 100;
@@ -35,7 +26,7 @@ timesteps = 10000;
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 
 % Derived nondimensional parameters.
-Re = L_p * U_p / nu_p;
+%Re = L_p * U_p / nu_p; % pour verication code 
 disp(['Reynolds number: ' num2str(Re)]);
 % Derived physical parameters.
 t_p = L_p / U_p;
@@ -74,6 +65,11 @@ disp(['Running ' num2str(timesteps) ' timesteps...']);
 for iter = 1:timesteps
     if (mod(iter,timesteps/10)==0)
         disp(['Ran ' num2str(iter) ' iterations']);
+        % extracting velocity data along the middle 
+        u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 
+        v_center = extractRowOrColumn(v, 'row', round(nodes/2))/u_lb; % v along the horizontal line at center 
+        disp(u_center); 
+        disp(v_center);
     end
     
     % Collision.
@@ -114,15 +110,6 @@ for iter = 1:timesteps
 %       imagesc(flipud(nut)); %%% turbulence viscosity 
 %       imagesc(flipud(omega));
 
-        %%% adding quiver 
-        hold on;
-        [X, Y] = meshgrid(1:11:nodes, 1:11:nodes);
-        sampled_u = u(1:11:end, 1:11:end);
-        sampled_v = v(1:11:end, 1:11:end);
-        quiver(X, Y, flipud(sampled_u), flipud(sampled_v), 'r', 'AutoScale', 'on', 'AutoScaleFactor', 1.5); 
-        %quiver(X, Y, X, -flipud(Y))
-        hold off; 
-        %%% done quiver 
         colorbar
         axis equal; 
         drawnow
