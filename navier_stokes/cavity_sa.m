@@ -67,7 +67,7 @@ for iter = 1:timesteps
         disp(['Ran ' num2str(iter) ' iterations']);
         % extracting velocity data along the middle 
         u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 
-        v_center = extractRowOrColumn(v, 'row', round(nodes/2))/u_lb; % v along the horizontal line at center 
+        v_center = flipud(extractRowOrColumn(v, 'row', round(nodes/2)))/u_lb; % v along the horizontal line at center 
         disp(u_center); 
         disp(v_center);
     end
