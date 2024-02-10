@@ -1,10 +1,11 @@
-% UNDER CONSTRUCTION
-
 % A Lattice Boltzmann (single relaxation time) D2Q9 solver,
 % with the Spalart Allmaras turbulence model, on a lid-driven cavity. 
 % Cell centers (nodes) are placed on the boundaries. 
 % Author: Robert Lee
 % Email: rlee32@gatech.edu
+
+% Modifications au code à des fins de validation faites par Nicolas Sarabia-Benoit 
+% Dans le cadre du cours MEC3900 - Projet Intégrateur III, à Polytechnique Montréal 
 
 clear;close all;clc;
 
@@ -13,20 +14,29 @@ addpath bc
 addpath turbulence
 addpath verif_assets
 
-% Physical parameters.
-L_p = 1; %1.1; % Cavity dimension. 
-U_p = 1; %1.1; % Cavity lid velocity.
-Re = 3200; % pour vÃ©rification, imposer Re au lieu de nu_p
-%nu_p = 1.2e-3; % 1.586e-5; % Physical kinematic viscosity. % commented pour vÃ©rification code 
-rho0 = 1;
-% Discrete/numerical parameters.
+%%% Physical base parameters.
+L_p = 1;   % Cavity dimension. 
+U_p = 1;   % Cavity lid velocity.
+rho0 = 1;  % Densité initiale 
+nu_p = 0;  % sert à setup le choix d'imposer viscosité ou nombre de Reynolds 
+
+%%% Simulation parameters.
+Re = 3200; % Nombre de Reynolds, à commenter pour imposer viscosité cinématique 
+%nu_p = 1.2e-3; % 1.586e-5; % Viscosité cinématique, commenter pour imposer Reynolds 
+if (nu_p~=0) % Dans ce cas, nu_p n'a été updaté, donc il n'est pas commenté et il faut évaluer Re avec sa valeur 
+    disp("nu_p imposé, Re calculé à partir de nouvelle valeur de nu_p.");
+else 
+    disp("Re imposé, nu_p imposé à partir de Re"); 
+    nu_p = L_p*U_p / Re; 
+end
+disp(strcat("nu_p = ", num2str(nu_p)));
+
 nodes = 100;
 dt = .002;
 timesteps = 10000;
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 
 % Derived nondimensional parameters.
-%Re = L_p * U_p / nu_p; % pour verication code 
 disp(['Reynolds number: ' num2str(Re)]);
 % Derived physical parameters.
 t_p = L_p / U_p;
@@ -41,6 +51,21 @@ omega = 1 / tau;
 disp(['Physical relaxation parameter: ' num2str(omega)]);
 u_lb = dt / dh;
 disp(['Lattice speed: ' num2str(u_lb)])
+
+% Info sur le setup numérique et checks de stabilité 
+total_time = dt*timesteps; 
+disp(strcat("Total simulation time : ", total_time, " s")); 
+ratio_relax_dt = tau/dt; 
+if (ratio_relax_dt<1)
+    disp(strcat("WARNING! tau/dt ratio lower than 1, ref stab checks for BGK unavailable. tau/dt = ", num2str(ratio_relax_dt)))
+cond_stab_bgk = sqrt(2/3)*(dh/dt); % juste pour avoir un idée par rapport à BGK
+disp(strcat("BGK stability condition: ", cond_stab_bgk)); 
+if (u>cond_stab_bgk)
+    disp("WARNING!!! BGK stab condition not respected"); 
+end 
+if (tau>5 && tau<0.5) 
+    disp("WARNING!! Relaxation time tau not stable"); 
+end 
 
 % Determine macro variables and apply macro BCs
 % Initialize macro, then meso.
@@ -68,8 +93,11 @@ for iter = 1:timesteps
         % extracting velocity data along the middle 
         u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 
         v_center = flipud(extractRowOrColumn(v, 'row', round(nodes/2)))/u_lb; % v along the horizontal line at center 
-        disp(u_center); 
-        disp(v_center);
+        % displaying velocities in array form 
+        out_center_speeds = zeros(nodes, 2) 
+        out_center_speeds(:,1) = u_center; 
+        out_center_speeds(:,2) = v_center; 
+        disp(out_center_speeds); 
     end
     
     % Collision.
