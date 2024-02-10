@@ -14,10 +14,10 @@ addpath turbulence
 addpath verif_assets
 
 % Physical parameters.
-L_p = 4; %1.1; % Cavity dimension. 
+L_p = 1; %1.1; % Cavity dimension. 
 U_p = 1; %1.1; % Cavity lid velocity.
-Re = 3333; % pour vérification, imposer Re au lieu de nu_p
-%nu_p = 1.2e-3; % 1.586e-5; % Physical kinematic viscosity. % commented pour vérification code 
+Re = 3200; % pour vÃ©rification, imposer Re au lieu de nu_p
+%nu_p = 1.2e-3; % 1.586e-5; % Physical kinematic viscosity. % commented pour vÃ©rification code 
 rho0 = 1;
 % Discrete/numerical parameters.
 nodes = 100;
