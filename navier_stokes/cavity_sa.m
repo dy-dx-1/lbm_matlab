@@ -4,8 +4,8 @@
 % Author: Robert Lee
 % Email: rlee32@gatech.edu
 
-% Modifications au code à des fins de validation faites par Nicolas Sarabia-Benoit 
-% Dans le cadre du cours MEC3900 - Projet Intégrateur III, à Polytechnique Montréal 
+% Modifications au code a  des fins de validation faites par Nicolas Sarabia-Benoit 
+% Dans le cadre du cours MEC3900 - Projet IntÃ©grateur III, a  Polytechnique Montreal 
 
 clear;close all;clc;
 
@@ -17,22 +17,22 @@ addpath verif_assets
 %%% Physical base parameters.
 L_p = 1;   % Cavity dimension. 
 U_p = 1;   % Cavity lid velocity.
-rho0 = 1;  % Densité initiale 
-nu_p = 0;  % sert à setup le choix d'imposer viscosité ou nombre de Reynolds 
+rho0 = 1;  % Densite initiale 
+nu_p = 0;  % sert a  setup le choix d'imposer viscositÃ© ou nombre de Reynolds 
 
 %%% Simulation parameters.
-Re = 3200; % Nombre de Reynolds, à commenter pour imposer viscosité cinématique 
-%nu_p = 1.2e-3; % 1.586e-5; % Viscosité cinématique, commenter pour imposer Reynolds 
-if (nu_p~=0) % Dans ce cas, nu_p n'a été updaté, donc il n'est pas commenté et il faut évaluer Re avec sa valeur 
-    disp("nu_p imposé, Re calculé à partir de nouvelle valeur de nu_p.");
+Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
+%nu_p = 1.2e-3; % 1.586e-5; % ViscositÃ© cinÃ©matique, commenter pour imposer Reynolds 
+if (nu_p~=0) % Dans ce cas, nu_p n'a Ã©tÃ© updatÃ©, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
+    disp("nu_p imposÃ©, Re calculÃ© Ã  partir de nouvelle valeur de nu_p.");
 else 
-    disp("Re imposé, nu_p imposé à partir de Re"); 
+    disp("Re imposÃ©, nu_p imposÃ© Ã  partir de Re"); 
     nu_p = L_p*U_p / Re; 
 end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
-nodes = 100;
-dt = .002;
+nodes = 129; 
+dt = .001;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%C'était .002 MAIS 1 SEMBLE FONCTIONNER AVEC 129??? 
 timesteps = 10000;
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 
@@ -49,18 +49,19 @@ tau = 3*nu_lb + 0.5;
 disp(['Original relaxation time: ' num2str(tau)]);
 omega = 1 / tau;
 disp(['Physical relaxation parameter: ' num2str(omega)]);
-u_lb = dt / dh;
+u_lb = (dt / dh);
 disp(['Lattice speed: ' num2str(u_lb)])
 
-% Info sur le setup numérique et checks de stabilité 
+% Info sur le setup numÃ©rique et checks de stabilitÃ© 
 total_time = dt*timesteps; 
-disp(strcat("Total simulation time : ", total_time, " s")); 
+disp(strcat("Total simulation time : ", num2str(total_time), " s")); 
 ratio_relax_dt = tau/dt; 
 if (ratio_relax_dt<1)
     disp(strcat("WARNING! tau/dt ratio lower than 1, ref stab checks for BGK unavailable. tau/dt = ", num2str(ratio_relax_dt)))
-cond_stab_bgk = sqrt(2/3)*(dh/dt); % juste pour avoir un idée par rapport à BGK
-disp(strcat("BGK stability condition: ", cond_stab_bgk)); 
-if (u>cond_stab_bgk)
+end 
+cond_stab_bgk = sqrt(2/3)*(dh/dt); % juste pour avoir un idÃ©e par rapport Ã  BGK
+disp(strcat("BGK stability condition (should be >U_p): ", num2str(cond_stab_bgk))); 
+if (U_p>cond_stab_bgk)
     disp("WARNING!!! BGK stab condition not respected"); 
 end 
 if (tau>5 && tau<0.5) 
