@@ -32,8 +32,8 @@ end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
 nodes = 129; 
-dt = .001;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%C'était .002 MAIS 1 SEMBLE FONCTIONNER AVEC 129??? 
-timesteps = 10000;
+dt = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%C'était .002 MAIS 1 SEMBLE FONCTIONNER AVEC 129??? 
+timesteps = 1000000;
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 
 % Derived nondimensional parameters.
@@ -42,14 +42,14 @@ disp(['Reynolds number: ' num2str(Re)]);
 t_p = L_p / U_p;
 disp(['Physical time scale: ' num2str(t_p) ' s']);
 % Derived discrete parameters.
-dh = 1/(nodes-1);
+dh = 1;
 nu_lb = dt / dh^2 / Re;
 disp(['Lattice viscosity: ' num2str(nu_lb)]);
 tau = 3*nu_lb + 0.5;
 disp(['Original relaxation time: ' num2str(tau)]);
 omega = 1 / tau;
 disp(['Physical relaxation parameter: ' num2str(omega)]);
-u_lb = (dt / dh);
+u_lb = (dh / dt);
 disp(['Lattice speed: ' num2str(u_lb)])
 
 % Info sur le setup numÃ©rique et checks de stabilitÃ© 
