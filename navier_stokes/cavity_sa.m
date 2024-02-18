@@ -39,16 +39,16 @@ disp(strcat("nu_p = ", num2str(nu_p)));
 dx_p = L_p/(N-1); % Espacement physique noeuds 
 Cl = dx_p; % Coeff convertion tel que dx_p = Cl*dx_lb 
 dt_p = dx_p*(u_lb/U_p); 
-Ct = dt_p % Coeff convertion tel que dt_p = Cl*dt_lb 
-Cnu = (Cl^2)/Ct % Coeff tel que nu_p = Cnu * nu_lb 
+Ct = dt_p; % Coeff convertion tel que dt_p = Cl*dt_lb 
+Cnu = (Cl^2)/Ct; % Coeff tel que nu_p = Cnu * nu_lb 
 
-nu_lb = nu_p/Cnu
+nu_lb = nu_p/Cnu;
 tau = 3*nu_lb + 0.5;
 omega = 1 / tau;
 
 %% testing zone 
-dt = dt_p 
-dh = dx_p 
+dt = dt_p; 
+dh = dx_p; 
 
 % Displaying info 
 disp(['Reynolds number: ' num2str(Re)]);
