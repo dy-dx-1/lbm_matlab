@@ -36,7 +36,7 @@ end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
 
-dx_p = L_p/(N-1); % Espacement physique noeuds 
+dx_p = L_p/(nodes-1); % Espacement physique noeuds 
 Cl = dx_p; % Coeff convertion tel que dx_p = Cl*dx_lb 
 dt_p = dx_p*(u_lb/U_p); 
 Ct = dt_p; % Coeff convertion tel que dt_p = Cl*dt_lb 
