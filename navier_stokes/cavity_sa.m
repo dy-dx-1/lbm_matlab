@@ -5,7 +5,7 @@
 % Email: rlee32@gatech.edu
 
 % Modifications au code a  des fins de validation faites par Nicolas Sarabia-Benoit 
-% Dans le cadre du cours MEC3900 - Projet IntÃ©grateur III, a  Polytechnique Montreal 
+% Dans le cadre du cours MEC3900 - Projet Integrateur III, a  Polytechnique Montreal 
 
 clear;close all;clc;
 
@@ -18,15 +18,15 @@ addpath verif_assets
 L_p = 1;   % Cavity dimension. 
 U_p = 1;   % Cavity lid velocity.
 rho0 = 1;  % Densite initiale 
-nu_p = 0;  % sert a  setup le choix d'imposer viscositÃ© ou nombre de Reynolds 
+nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds 
 
 %%% Simulation parameters.
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
-%nu_p = 1.2e-3; % 1.586e-5; % ViscositÃ© cinÃ©matique, commenter pour imposer Reynolds 
-if (nu_p~=0) % Dans ce cas, nu_p n'a Ã©tÃ© updatÃ©, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
-    disp("nu_p imposÃ©, Re calculÃ© Ã  partir de nouvelle valeur de nu_p.");
+%nu_p = 1.2e-3; % 1.586e-5; % Viscosite cinematique, commenter pour imposer Reynolds 
+if (nu_p~=0) % Dans ce cas, nu_p n'a ete update, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
+    disp("nu_p impose, Re calcule a  partir de nouvelle valeur de nu_p.");
 else 
-    disp("Re imposÃ©, nu_p imposÃ© Ã  partir de Re"); 
+    disp("Re impose, nu_p impose a  partir de Re"); 
     nu_p = L_p*U_p / Re; 
 end
 disp(strcat("nu_p = ", num2str(nu_p)));
@@ -50,16 +50,16 @@ disp(['Original relaxation time: ' num2str(tau)]);
 omega = 1 / tau;
 disp(['Physical relaxation parameter: ' num2str(omega)]);
 u_lb = (dh / dt);
-disp(['Lattice speed: ' num2str(u_lb)])
+disp(['Lattice speed: ' num2str(u_lb)]);
 
-% Info sur le setup numÃ©rique et checks de stabilitÃ© 
+% Info sur le setup numerique et checks de stabilite 
 total_time = dt*timesteps; 
 disp(strcat("Total simulation time : ", num2str(total_time), " s")); 
 ratio_relax_dt = tau/dt; 
 if (ratio_relax_dt<1)
     disp(strcat("WARNING! tau/dt ratio lower than 1, ref stab checks for BGK unavailable. tau/dt = ", num2str(ratio_relax_dt)))
 end 
-cond_stab_bgk = sqrt(2/3)*(dh/dt); % juste pour avoir un idÃ©e par rapport Ã  BGK
+cond_stab_bgk = sqrt(2/3)*(dh/dt); % juste pour avoir un idee par rapport a  BGK
 disp(strcat("BGK stability condition (should be >U_p): ", num2str(cond_stab_bgk))); 
 if (U_p>cond_stab_bgk)
     disp("WARNING!!! BGK stab condition not respected"); 
@@ -95,7 +95,7 @@ for iter = 1:timesteps
         u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 
         v_center = flipud(extractRowOrColumn(v, 'row', round(nodes/2)))/u_lb; % v along the horizontal line at center 
         % displaying velocities in array form 
-        out_center_speeds = zeros(nodes, 2) 
+        out_center_speeds = zeros(nodes, 2); 
         out_center_speeds(:,1) = u_center; 
         out_center_speeds(:,2) = v_center; 
         disp(out_center_speeds); 
