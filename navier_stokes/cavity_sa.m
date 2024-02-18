@@ -19,47 +19,52 @@ L_p = 1;   % Cavity dimension.
 U_p = 1;   % Cavity lid velocity.
 rho0 = 1;  % Densite initiale 
 nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds 
+nodes = 129;
+timesteps = 1000000; 
+nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
+u_lb = 0.1; 
 
 %%% Simulation parameters.
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
 %nu_p = 1.2e-3; % 1.586e-5; % Viscosite cinematique, commenter pour imposer Reynolds 
 if (nu_p~=0) % Dans ce cas, nu_p n'a ete update, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
-    disp("nu_p impose, Re calcule a  partir de nouvelle valeur de nu_p.");
+    disp("nu_p impose, Re calcule a partir de nouvelle valeur de nu_p.");
 else 
-    disp("Re impose, nu_p impose a  partir de Re"); 
+    disp("Re impose, nu_p impose a partir de Re"); 
     nu_p = L_p*U_p / Re; 
 end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
-nodes = 129; 
-dt = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%C'était .002 MAIS 1 SEMBLE FONCTIONNER AVEC 129??? 
-timesteps = 1000000;
-nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 
-% Derived nondimensional parameters.
-disp(['Reynolds number: ' num2str(Re)]);
-% Derived physical parameters.
-t_p = L_p / U_p;
-disp(['Physical time scale: ' num2str(t_p) ' s']);
-% Derived discrete parameters.
-dh = 1;
-nu_lb = dt / dh^2 / Re;
-disp(['Lattice viscosity: ' num2str(nu_lb)]);
+dx_p = L_p/(N-1); % Espacement physique noeuds 
+Cl = dx_p; % Coeff convertion tel que dx_p = Cl*dx_lb 
+dt_p = dx_p*(u_lb/U_p); 
+Ct = dt_p % Coeff convertion tel que dt_p = Cl*dt_lb 
+Cnu = (Cl^2)/Ct % Coeff tel que nu_p = Cnu * nu_lb 
+
+nu_lb = nu_p/Cnu
 tau = 3*nu_lb + 0.5;
-disp(['Original relaxation time: ' num2str(tau)]);
 omega = 1 / tau;
+
+%% testing zone 
+dt = dt_p 
+dh = dx_p 
+
+% Displaying info 
+disp(['Reynolds number: ' num2str(Re)]);
+disp(['Lattice viscosity: ' num2str(nu_lb)]);
+disp(['Original relaxation time: ' num2str(tau)]);
 disp(['Physical relaxation parameter: ' num2str(omega)]);
-u_lb = (dh / dt);
 disp(['Lattice speed: ' num2str(u_lb)]);
 
 % Info sur le setup numerique et checks de stabilite 
-total_time = dt*timesteps; 
-disp(strcat("Total simulation time : ", num2str(total_time), " s")); 
-ratio_relax_dt = tau/dt; 
+total_time = dt_p*timesteps; 
+disp(strcat("Total real simulation time : ", num2str(total_time), " s")); 
+ratio_relax_dt = tau/dt_p; 
 if (ratio_relax_dt<1)
     disp(strcat("WARNING! tau/dt ratio lower than 1, ref stab checks for BGK unavailable. tau/dt = ", num2str(ratio_relax_dt)))
 end 
-cond_stab_bgk = sqrt(2/3)*(dh/dt); % juste pour avoir un idee par rapport a  BGK
+cond_stab_bgk = sqrt(2/3)*(dh/dt_p); % juste pour avoir un idee par rapport a  BGK
 disp(strcat("BGK stability condition (should be >U_p): ", num2str(cond_stab_bgk))); 
 if (U_p>cond_stab_bgk)
     disp("WARNING!!! BGK stab condition not respected"); 
