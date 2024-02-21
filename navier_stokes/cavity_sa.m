@@ -56,6 +56,8 @@ disp(['Lattice viscosity: ' num2str(nu_lb)]);
 disp(['Original relaxation time: ' num2str(tau)]);
 disp(['Physical relaxation parameter: ' num2str(omega)]);
 disp(['Lattice speed: ' num2str(u_lb)]);
+disp(['Timestep: ' num2str(dt)]);
+disp(['Spatial step: ' num2str(dh)]);
 
 % Info sur le setup numerique et checks de stabilite 
 total_time = dt_p*timesteps; 
