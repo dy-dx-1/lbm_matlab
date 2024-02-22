@@ -27,7 +27,7 @@ u_lb = 0.1;
 %%% Simulation parameters.
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
 %nu_p = 1.2e-3; % 1.586e-5; % Viscosite cinematique, commenter pour imposer Reynolds 
-if (nu_p~=0) % Dans ce cas, nu_p n'a ete update, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
+if (nu_p~=0) % Dans ce cas, nu_p n'a pas ete update, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
     disp("nu_p impose, Re calcule a partir de nouvelle valeur de nu_p.");
 else 
     disp("Re impose, nu_p impose a partir de Re"); 
@@ -51,29 +51,11 @@ dt = dt_p;
 dh = dx_p; 
 
 % Displaying info 
-disp(['Reynolds number: ' num2str(Re)]);
-disp(['Lattice viscosity: ' num2str(nu_lb)]);
-disp(['Original relaxation time: ' num2str(tau)]);
-disp(['Physical relaxation parameter: ' num2str(omega)]);
-disp(['Lattice speed: ' num2str(u_lb)]);
-disp(['Timestep: ' num2str(dt)]);
-disp(['Spatial step: ' num2str(dh)]);
+display_sim_info(L_p, U_p, nodes, timesteps, Re, dh, dt, nu_lb, tau);
 
 % Info sur le setup numerique et checks de stabilite 
 total_time = dt_p*timesteps; 
 disp(strcat("Total real simulation time : ", num2str(total_time), " s")); 
-ratio_relax_dt = tau/dt_p; 
-if (ratio_relax_dt<1)
-    disp(strcat("WARNING! tau/dt ratio lower than 1, ref stab checks for BGK unavailable. tau/dt = ", num2str(ratio_relax_dt)))
-end 
-cond_stab_bgk = sqrt(2/3)*(dh/dt_p); % juste pour avoir un idee par rapport a  BGK
-disp(strcat("BGK stability condition (should be >U_p): ", num2str(cond_stab_bgk))); 
-if (U_p>cond_stab_bgk)
-    disp("WARNING!!! BGK stab condition not respected"); 
-end 
-if (tau>5 && tau<0.5) 
-    disp("WARNING!! Relaxation time tau not stable"); 
-end 
 
 % Determine macro variables and apply macro BCs
 % Initialize macro, then meso.
