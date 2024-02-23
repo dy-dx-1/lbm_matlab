@@ -66,7 +66,7 @@ u(end,2:end-1) = u_lb;
 % Initialize.
 f = compute_feq(rho,u,v);
 % Apply meso BCs.
-f = moving_wall_bc(f,'north',u_lb);
+f = wall_bc(f,'north');
 f = wall_bc(f,'south');
 f = wall_bc(f,'east');
 f = wall_bc(f,'west');
@@ -94,7 +94,7 @@ for iter = 1:timesteps
     f = collide_sa(f, u, v, rho, omega);
     
     % Apply meso BCs.
-    f = moving_wall_bc(f,'north',u_lb);
+    f = wall_bc(f,'north');
     f = wall_bc(f,'south');
     f = wall_bc(f,'east');
     f = wall_bc(f,'west');
@@ -103,7 +103,7 @@ for iter = 1:timesteps
     f = stream(f);
     
     % Apply meso BCs.
-    f = moving_wall_bc(f,'north',u_lb);
+    f = wall_bc(f,'north');
     f = wall_bc(f,'south');
     f = wall_bc(f,'east');
     f = wall_bc(f,'west');
