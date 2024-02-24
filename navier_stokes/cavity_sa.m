@@ -20,9 +20,10 @@ U_p = 1;   % Cavity lid velocity.
 rho0 = 1;  % Densite initiale 
 nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds 
 nodes = 129;
-timesteps = 1000000; 
+total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 u_lb = 0.1; 
+tau = 0.8090; % relaxation time [s]
 
 %%% Simulation parameters.
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
@@ -35,16 +36,11 @@ else
 end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
-
-dx_p = L_p/(nodes-1); % Espacement physique noeuds 
-Cl = dx_p; % Coeff convertion tel que dx_p = Cl*dx_lb 
-dt_p = dx_p*(u_lb/U_p); 
-Ct = dt_p; % Coeff convertion tel que dt_p = Cl*dt_lb 
-Cnu = (Cl^2)/Ct; % Coeff tel que nu_p = Cnu * nu_lb 
-
-nu_lb = nu_p/Cnu;
-tau = 3*nu_lb + 0.5;
 omega = 1 / tau;
+nu_lb = (1/3)*(omega-0.5);
+dx_p = L_p/(N-1); 
+dt_p = (nu_lb*(dx_p^2))/nu_p;
+timesteps = round(total_time/dt_p); 
 
 %% testing zone 
 dt = dt_p; 
@@ -52,10 +48,6 @@ dh = dx_p;
 
 % Displaying info 
 display_sim_info(L_p, U_p, nodes, timesteps, Re, dh, dt, nu_lb, tau);
-
-% Info sur le setup numerique et checks de stabilite 
-total_time = dt_p*timesteps; 
-disp(strcat("Total real simulation time : ", num2str(total_time), " s")); 
 
 % Determine macro variables and apply macro BCs
 % Initialize macro, then meso.
