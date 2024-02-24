@@ -89,8 +89,8 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = wall_bc(f,'north');
     f = wall_bc(f,'south');
-    f = wall_bc(f,'east');
-    f = wall_bc(f,'west');
+    f = outlet_bc(f, 'east'); % out NOTE: check1! maybe switch for cnst density 
+    f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
 
     % Streaming.
     f = stream(f);
@@ -98,18 +98,23 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = wall_bc(f,'north');
     f = wall_bc(f,'south');
-    f = wall_bc(f,'east');
-    f = wall_bc(f,'west');
+    f = outlet_bc(f, 'east'); % out NOTE: check1! maybe switch for cnst density 
+    f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
     
-    % Determine macro variables and apply macro BCs
+    % Determine macro variables
     [u,v,rho] = reconstruct_macro_all(f);
-    u(end,2:end-1) = u_lb;
+    % Macro BCs 
+    % North wall 
+    u(end,2:end-1) = 0; 
     v(end,2:end-1) = 0;
+    % South wall 
     u(1,:) = 0;
     v(1,:) = 0;
-    u(:,1) = 0;
+    % West wall (inlet)
+    u(:,1) = u_lb;
     v(:,1) = 0;
-    u(:,end) = 0;
+    % East wall (outlet)
+    u(:,end) = u_lb;
     v(:,end) = 0;
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
