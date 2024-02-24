@@ -23,7 +23,6 @@ nodes = 129;
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 u_lb = 0.1; 
-tau = 0.8090; % relaxation time [s]
 
 %%% Simulation parameters.
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
@@ -36,10 +35,12 @@ else
 end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
-omega = 1 / tau;
-nu_lb = (1/3)*(omega-0.5);
-dx_p = L_p/(N-1); 
-dt_p = (nu_lb*(dx_p^2))/nu_p;
+dx_p = L_p/(nodes-1); 
+dt_p=u_lb*dx_p;
+nu_lb = nu_p*dt_p/(dx_p*dx_p);
+tau = 3*nu_lb + 0.5; 
+omega = 1/tau;
+
 timesteps = round(total_time/dt_p); 
 
 %% testing zone 
