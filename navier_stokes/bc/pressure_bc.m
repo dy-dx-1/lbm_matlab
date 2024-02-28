@@ -27,13 +27,13 @@ function f = pressure_bc(f, side)
         rho = sum(f,3);
         [rows, cols] = size(rho);
 
-        u_global, v_global, rho_ = reconstruct_macro_all(f); 
-        u_b = u_global(2:end-1, end-1); 
-        v_b = v_global(2:end-1, end-1);
+        u, v, rho = reconstruct_macro_all(f); 
+        u_b = u(2:end-1, end-1); 
+        v_b = v(2:end-1, end-1);
         u_vect_b = [u_b, v_b]; 
 
-        u_b1 = u_global(2:end-1, end); 
-        v_b1 = v_global(2:end-1, end);
+        u_b1 = u(2:end-1, end); 
+        v_b1 = v(2:end-1, end);
         u_vect_b1 = [u_b1, v_b1];
 
         u_vect_w = u_vect_b + 0.5*(u_vect_b-u_vect_b1); 
