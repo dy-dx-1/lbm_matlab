@@ -26,21 +26,22 @@ function f = pressure_bc(f, side)
         % vitesse sur le mur, vector form 
         rho = sum(f,3);
         [rows, cols] = size(rho);
+        disp([rows, cols]); 
 
         [u, v, rho] = reconstruct_macro_all(f); 
-        u_b = u(2:end-1, end-1); 
-        v_b = v(2:end-1, end-1);
+        u_b = u(2:end-1, end); 
+        v_b = v(2:end-1, end);
         u_vect_b = [u_b, v_b]; 
-
-        u_b1 = u(2:end-1, end); 
-        v_b1 = v(2:end-1, end);
+        disp(size(u_b));disp(size(v_b)); 
+        u_b1 = u(2:end-1, end-1); % ub and ub1 refer to the boundary node and the next interior node following the inward normal vector of the boundary.
+        v_b1 = v(2:end-1, end-1);
         u_vect_b1 = [u_b1, v_b1];
 
         u_vect_w = u_vect_b + 0.5*(u_vect_b-u_vect_b1); 
         % (prendre tt donnees verticales de avant derniere col pr BB) 
-        f(2:end-1, end-1, 4) = -f(2:end-1, end-1, 2) + (2*w_2*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
-        f(2:end-1, end-1, 7) = -f(2:end-1, end-1, 6) + (2*w_6*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
-        f(2:end-1, end-1, 8) = -f(2:end-1, end-1, 9) + (2*w_9*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
+        f(2:end-1, end, 4) = -f(2:end-1, end, 2) + (2*w_2*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
+        f(2:end-1, end, 7) = -f(2:end-1, end, 6) + (2*w_6*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
+        f(2:end-1, end, 8) = -f(2:end-1, end, 9) + (2*w_9*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
 
     end
     
