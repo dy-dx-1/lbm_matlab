@@ -114,8 +114,8 @@ for iter = 1:timesteps
     u(:,1) = u_lb;
     v(:,1) = 0;
     % East wall (outlet)
-    u(:,end) = u_lb;
-    v(:,end) = 0;
+    % NOTE : nothing? 
+
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
     % VISUALIZATION

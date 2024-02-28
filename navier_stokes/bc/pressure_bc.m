@@ -17,10 +17,6 @@ function f = pressure_bc(f, side)
         c_9 = [1; -1];
         
         % vitesse sur le mur, vector form 
-        rho = sum(f,3);
-        [rows, cols] = size(rho);
-        disp([rows, cols]); % 129x129
-
         [u, v, rho] = reconstruct_macro_all(f); 
         u_b = u(2:end-1, end); %127x1 
         v_b = v(2:end-1, end); %127x1 
@@ -38,5 +34,3 @@ function f = pressure_bc(f, side)
         f(2:end-1, end, 8) = -f(2:end-1, end, 9) + (2*w_9*rho_boundary*(1+(((u_vect_w*c_9).^2)/(2*(cs^4)))-((vecnorm(u_vect_w, 2, 2).^2)/(2*(cs^2)))));
 
     end
-    
-    
