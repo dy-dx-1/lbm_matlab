@@ -113,8 +113,10 @@ for iter = 1:timesteps
     % West wall (inlet)
     u(:,1) = u_lb;
     v(:,1) = 0;
-    % East wall (outlet)
-    % NOTE : nothing? 
+    % East wall (outlet), constant pressure 
+    rho(:, end) = 1; % constant density 
+    v(:, end) = 0; % uniform flow out 
+    
 
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
