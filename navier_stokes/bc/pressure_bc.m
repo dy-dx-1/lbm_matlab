@@ -12,36 +12,30 @@ function f = pressure_bc(f, side)
         w_6 = 1/36; 
         w_9 = 1/36;  
         
-        c = zeros(9,2);
-        c(1,:) = [0, 0];
-        c(2,:) = [1, 0];
-        c(3,:) = [0, 1];
-        c(4,:) = [-1, 0];
-        c(5,:) = [0, -1];
-        c(6,:) = [1, 1];
-        c(7,:) = [-1, 1];
-        c(8,:) = [-1, -1];
-        c(9,:) = [1, -1];
+        c_2 = [1; 0];
+        c_6 = [1; 1];
+        c_9 = [1; -1];
         
         % vitesse sur le mur, vector form 
         rho = sum(f,3);
         [rows, cols] = size(rho);
-        disp([rows, cols]); 
+        disp([rows, cols]); % 129x129
 
         [u, v, rho] = reconstruct_macro_all(f); 
-        u_b = u(2:end-1, end); 
-        v_b = v(2:end-1, end);
+        u_b = u(2:end-1, end); %127x1 
+        v_b = v(2:end-1, end); %127x1 
         u_vect_b = [u_b, v_b]; 
-        disp(size(u_b));disp(size(v_b)); 
+        
         u_b1 = u(2:end-1, end-1); % ub and ub1 refer to the boundary node and the next interior node following the inward normal vector of the boundary.
         v_b1 = v(2:end-1, end-1);
         u_vect_b1 = [u_b1, v_b1];
 
-        u_vect_w = u_vect_b + 0.5*(u_vect_b-u_vect_b1); 
+        u_vect_w = u_vect_b + 0.5*(u_vect_b-u_vect_b1); % vect [nodes-2 x 2] of approx speeds u, v along boundary 
+        
         % (prendre tt donnees verticales de avant derniere col pr BB) 
-        f(2:end-1, end, 4) = -f(2:end-1, end, 2) + (2*w_2*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
-        f(2:end-1, end, 7) = -f(2:end-1, end, 6) + (2*w_6*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
-        f(2:end-1, end, 8) = -f(2:end-1, end, 9) + (2*w_9*rho_boundary*(1+(((dot(c(2,:), u_vect_w)))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
+        f(2:end-1, end, 4) = -f(2:end-1, end, 2) + (2*w_2*rho_boundary*(1+(((u_vect_w*c_2))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
+        f(2:end-1, end, 7) = -f(2:end-1, end, 6) + (2*w_6*rho_boundary*(1+(((u_vect_w*c_6))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
+        f(2:end-1, end, 8) = -f(2:end-1, end, 9) + (2*w_9*rho_boundary*(1+(((u_vect_w*c_9))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
 
     end
     
