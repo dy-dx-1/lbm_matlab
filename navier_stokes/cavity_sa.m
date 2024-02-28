@@ -22,7 +22,7 @@ nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds
 nodes = 129;
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
-u_lb = 0.1; 
+u_lb = 0.18; 
 
 %%% Simulation parameters.
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
@@ -61,8 +61,8 @@ f = compute_feq(rho,u,v);
 % Apply meso BCs.
 f = wall_bc(f,'north');
 f = wall_bc(f,'south');
-f = wall_bc(f,'east');
-f = wall_bc(f,'west');
+f = pressure_bc(f,'east');
+f = inlet_bc(f, u_lb, 'west');
 % Initialize turbulence stuff.
 d = compute_wall_distances(nodes);
 nutilde = nutilde0*ones(nodes,nodes);
@@ -89,7 +89,7 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = wall_bc(f,'north');
     f = wall_bc(f,'south');
-    f = outlet_bc(f, 'east'); % out NOTE: check1! maybe switch for cnst density 
+    f = pressure_bc(f,'east'); % out NOTE: check1! maybe switch for cnst density 
     f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
 
     % Streaming.
@@ -98,7 +98,7 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = wall_bc(f,'north');
     f = wall_bc(f,'south');
-    f = outlet_bc(f, 'east'); % out NOTE: check1! maybe switch for cnst density 
+    f = pressure_bc(f,'east'); % out NOTE: check1! maybe switch for cnst density 
     f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
     
     % Determine macro variables
