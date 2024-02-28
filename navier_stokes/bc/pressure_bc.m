@@ -31,7 +31,8 @@ function f = pressure_bc(f, side)
         u_vect_b1 = [u_b1, v_b1];
 
         u_vect_w = u_vect_b + 0.5*(u_vect_b-u_vect_b1); % vect [nodes-2 x 2] of approx speeds u, v along boundary 
-        
+        disp(u_vect_w); 
+        disp(u_vect_w*c_2); 
         % (prendre tt donnees verticales de avant derniere col pr BB) 
         f(2:end-1, end, 4) = -f(2:end-1, end, 2) + (2*w_2*rho_boundary*(1+(((u_vect_w*c_2))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
         f(2:end-1, end, 7) = -f(2:end-1, end, 6) + (2*w_6*rho_boundary*(1+(((u_vect_w*c_6))/(2*(cs^4)))-((u_vect_w^2)/(2*(cs^2)))));
