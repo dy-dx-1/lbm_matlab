@@ -116,7 +116,7 @@ for iter = 1:timesteps
     % East wall (outlet), constant pressure 
     rho(:, end) = 1; % constant density 
     v(:, end) = 0; % uniform flow out 
-    
+    u(:, end) = -1 + (1./rho(:, end)).*sum(f(:, end, [1,3,5])) + 2*sum(f(:, end, [2,6,9]))
 
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
