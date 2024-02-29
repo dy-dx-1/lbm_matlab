@@ -61,7 +61,7 @@ f = compute_feq(rho,u,v);
 % Apply meso BCs.
 f = wall_bc(f,'north');
 f = wall_bc(f,'south');
-f = outlet_bc(f,'east');
+f = pressure_bc(f,'east');
 f = inlet_bc(f, u_lb, 'west');
 % Initialize turbulence stuff.
 d = compute_wall_distances(nodes);
@@ -89,7 +89,7 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = wall_bc(f,'north');
     f = wall_bc(f,'south');
-    f = outlet_bc(f,'east'); % out NOTE: check1! maybe switch for cnst density 
+    f = pressure_bc(f,'east'); 
     f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
 
     % Streaming.
@@ -98,7 +98,7 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = wall_bc(f,'north');
     f = wall_bc(f,'south');
-    f = outlet_bc(f,'east'); % out NOTE: check1! maybe switch for cnst density 
+    f = pressure_bc(f,'east');  
     f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
     
     % Determine macro variables
