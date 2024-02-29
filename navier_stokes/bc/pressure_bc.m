@@ -3,6 +3,7 @@ function f = pressure_bc(f, side)
     % Applies a pressure BC to the distirbution functions in 2d matrix form.
     % Assumes boundary nodes are placed half a cell away. NEBB wet node scheme not usable because it is not appropiate for high Re. 
     % NOTE: i from 1 to 9 (and not 0 to 8) 
+    
     if strcmp(side, 'east') % East outlet.   
         rho_boundary = 1; % densite constante, ecoulement incompressible 
         cs = sqrt(1/3); 

@@ -36,7 +36,7 @@ end
 disp(strcat("nu_p = ", num2str(nu_p)));
 
 dx_p = L_p/(nodes-1); 
-dt_p=u_lb*dx_p;
+dt_p = u_lb*dx_p;
 nu_lb = nu_p*dt_p/(dx_p*dx_p);
 tau = 3*nu_lb + 0.5; 
 omega = 1/tau;
@@ -55,7 +55,8 @@ display_sim_info(L_p, U_p, nodes, timesteps, Re, dh, dt, nu_lb, tau);
 rho = rho0*ones(nodes,nodes);
 u = zeros(nodes,nodes);
 v = zeros(nodes,nodes);
-u(end,2:end-1) = u_lb;
+u(2:end-1,1) = u_lb;
+
 % Initialize.
 f = compute_feq(rho,u,v);
 % Apply meso BCs.
@@ -105,18 +106,18 @@ for iter = 1:timesteps
     [u,v,rho] = reconstruct_macro_all(f);
     % Macro BCs 
     % North wall 
-    u(end,2:end-1) = 0; 
-    v(end,2:end-1) = 0;
+    u(end,:) = 0; 
+    v(end,:) = 0;
     % South wall 
     u(1,:) = 0;
     v(1,:) = 0;
     % West wall (inlet)
-    u(:,1) = u_lb;
-    v(:,1) = 0;
+    u(2:end-1,1) = u_lb;
+    v(2:end-1,1) = 0;
     % East wall (outlet), constant pressure 
-    rho(:, end) = 1; % constant density 
-    v(:, end) = 0; % uniform flow out 
-    %instable? u(:, end) = -1 + (1./rho(:, end)).*sum(f(:, end, [1,3,5]), 3) + 2*sum(f(:, end, [2,6,9]), 3);
+    rho(2:end-1, end) = 1; % constant density 
+    v(2:end-1, end) = 0; % uniform flow out 
+    % super instable u(2:end-1, end) = -1 + (1./rho(2:end-1, end)).*sum(f(2:end-1, end, [1,3,5]), 3) + 2*sum(f(2:end-1, end, [2,6,9]), 3);
 
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
