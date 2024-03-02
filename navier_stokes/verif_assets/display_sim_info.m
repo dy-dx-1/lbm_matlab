@@ -1,11 +1,13 @@
-function display_sim_info(L, U, nodes, timesteps, Re, dx, dt, nu_lb, tau)
+function display_sim_info(L, U, nodes, nx, ny, timesteps, Re, dx, dt, nu_lb, tau)
     % Displays relevant simulation information 
     disp("--------Simulation started--------"); 
     disp("***Simulation parameters***"); 
     disp(["Cavity length: " num2str(L)]); 
     disp(["Lid velocity: " num2str(U)]); 
     disp(["Reynolds number: " num2str(Re)]); 
-    disp(["Number of nodes: " num2str(nodes)]); 
+    disp(["Total number of nodes: " num2str(nodes)]); 
+    disp(["Nodes in the X direction: " num2str(nx)]);
+    disp(["Nodes in the Y direction: " num2str(ny)]);
     disp(["Number of timesteps: " num2str(timesteps)]); 
     disp(["***Derived parameters***"]); 
     disp(["Spatial step dx: " num2str(dx)]); 

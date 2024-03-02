@@ -20,7 +20,7 @@ U_p = 1;   % Cavity lid velocity.
 rho0 = 1;  % Densite initiale 
 nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds 
 
-nodes = 129; % total # of nodes used in the sim 
+nodes = 16641; % total # of nodes used in the sim, 16641 corresponds to 129x129 for GHIA comparison 
 duct_ratio = 1; % ratio for the rectangel such that Length = ratio*Height
 
 total_time = 20; %temps de simulation total en sec 
@@ -56,7 +56,7 @@ dt = dt_p;
 dh = dx_p; 
 
 % Displaying info 
-display_sim_info(L_p, U_p, nodes, timesteps, Re, dh, dt, nu_lb, tau);
+display_sim_info(L_p, U_p, nodes, nx, ny, timesteps, Re, dh, dt, nu_lb, tau);
 
 % Determine macro variables and apply macro BCs
 % Initialize macro, then meso.
