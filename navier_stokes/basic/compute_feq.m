@@ -15,8 +15,8 @@ c(7,:) = [-1, 1];
 c(8,:) = [-1, -1];
 c(9,:) = [1, -1];
 
-[nodes,~] = size(rho);
-feq = zeros(nodes,nodes,9);
+[ny,nx] = size(rho);
+feq = zeros(ny,nx,9);
 t1 = u.*u + v.*v;
 for k = 1:9
     t2 = c(k,1)*u + c(k,2)*v;
