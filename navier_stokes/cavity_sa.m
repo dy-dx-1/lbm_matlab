@@ -21,7 +21,7 @@ rho0 = 1;  % Densite initiale
 nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds 
 
 nodes = 129; % total # of nodes used in the sim 
-duct_ratio = 3 % ratio for the rectangel such that Length = ratio*Height
+duct_ratio = 1; % ratio for the rectangel such that Length = ratio*Height
 
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
@@ -40,7 +40,7 @@ disp(strcat("nu_p = ", num2str(nu_p)));
 
 % Derived domain nodes ; considering dx=dy=dh
 nx = ((1-duct_ratio)+sqrt((duct_ratio-1)^2 + 4*duct_ratio*nodes))*0.5; 
-ny = int(nodes/nx); 
+ny = round(nodes/nx); 
 
 % Lbm params s
 dx_p = L_p/(nx-1); 
