@@ -5,7 +5,6 @@ function f = pressure_bc(f, side)
     % NOTE: i from 1 to 9 (and not 0 to 8) 
     
     if strcmp(side, 'east') % East outlet.   
-        rho_boundary = 1; % densite constante, ecoulement incompressible 
         cs = sqrt(1/3); 
 
         % poids et directions
@@ -19,8 +18,10 @@ function f = pressure_bc(f, side)
         
         % vitesse sur le mur, vector form 
         [u, v, rho] = reconstruct_macro_all(f); 
-        rho_boundary = rho(2:end-1, end); 
+        %rho_boundary = 1; % densite constante, ecoulement incompressible 
+        rho_boundary = 0.5*(rho(2:end-1, end) + rho(2:end-1, end-1)); 
         disp(rho_boundary); 
+
         u_b = u(2:end-1, end); %127x1 
         v_b = v(2:end-1, end); %127x1 
         u_vect_b = [u_b, v_b]; 

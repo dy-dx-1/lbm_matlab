@@ -4,7 +4,9 @@ function f = inlet_bc(f, u_lb, side)
 % Assumes boundary nodes are located on the boundary (as opposed to half-cell away).
 
 if strcmp(side, 'west') % West inlet, fixed velocity. BB method 
-    rho_boundary = 1; % densite constante, ecoulement incompressible 
+    %rho_boundary = 1; % densite constante, ecoulement incompressible 
+    [~, ~, rho] = reconstruct_macro_all(f); 
+    rho_boundary = 0.5*(rho(2:end-1, end) + rho(2:end-1, end-1)); 
     cs = sqrt(1/3); 
 
     % poids et directions
