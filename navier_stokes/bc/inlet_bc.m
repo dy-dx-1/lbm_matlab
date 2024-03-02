@@ -6,7 +6,7 @@ function f = inlet_bc(f, u_lb, side)
 if strcmp(side, 'west') % West inlet, fixed velocity. BB method 
     %rho_boundary = 1; % densite constante, ecoulement incompressible 
     [~, ~, rho] = reconstruct_macro_all(f); 
-    rho_boundary = 0.5*(rho(2:end-1, end) + rho(2:end-1, end-1)); 
+    rho_boundary = 0.5*(rho(2:end-1, 1) + rho(2:end-1, 2)); 
     cs = sqrt(1/3); 
 
     % poids et directions
