@@ -16,6 +16,7 @@ function d = compute_wall_distances(ny, nx)
     end
 
 %{
+old version############################################################# before rectangular domain 
 function d = compute_wall_distances(nodes)
 % for the lid driven cavity problem. 
 
@@ -28,4 +29,4 @@ bottom_wall_distance = repmat(flipud(x'),1,nodes);
 top_wall_distance = repmat(x',1,nodes);
 miny = min(bottom_wall_distance,top_wall_distance);
 d = min(minx,miny);
-%} old version############################################################# before rectangular domain 
+%} 
