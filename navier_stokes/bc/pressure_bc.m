@@ -20,7 +20,6 @@ function f = pressure_bc(f, side)
         [u, v, rho] = reconstruct_macro_all(f); 
         %rho_boundary = 1; % densite constante, ecoulement incompressible 
         rho_boundary = 0.5*(rho(2:end-1, end) + rho(2:end-1, end-1)); 
-        disp(rho_boundary); 
 
         u_b = u(2:end-1, end); %127x1 
         v_b = v(2:end-1, end); %127x1 

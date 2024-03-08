@@ -22,17 +22,9 @@ tau = 0.52;
 
 nodes = 16641; % total # of nodes used in the sim, 16641 corresponds to 129x129 for GHIA comparison 
 duct_ratio = 1; % ratio for the rectangel such that Length = ratio*Height
-H_p = L_p/ratio; 
-
-% Setting up cylinder area 
-[Y,X] = meshgrid(1:ly,1:lx);
-cyl_diam = 0.4; % Diameter of cylinder 
-cyl_rad = cyl_diam/2; % radius of cylinder 
-x_cyl = L_p/2; % X position of center of cyl 
-y_cyl = H_p/2; % Y position of center of cyl 
-cyl_matrix = (X-x_cyl).^2 + (Y-y_cyl).^2 <= cyl_rad.^2; % Matrix where 1 represents a cylinder node 
-cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
-
+H_p = L_p/duct_ratio; 
+cyl_diam = 0.4; % Diameter of cylinder
+ 
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 u_lb = 0.18; 
@@ -54,6 +46,14 @@ timesteps = round(total_time/dt_p);
 %% testing zone 
 dt = dt_p; 
 dh = dx_p; 
+
+% Setting up cylinder area 
+[X,Y] = meshgrid(1:nx,1:ny);
+cyl_rad_nodes = round(cyl_diam/(2*dx_p)) + 1; % cyl radius expressed in nodes
+x_cyl = nx/2; % X position of center of cyl 
+y_cyl = ny/2; % Y position of center of cyl 
+cyl_matrix = (X-x_cyl).^2 + (Y-y_cyl).^2 <= cyl_rad_nodes.^2; % Matrix where 1 represents a cylinder node 
+cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
 
 % Displaying info 
 display_sim_info(L_p, U_p, nodes, nx, ny, timesteps, Re, dh, dt, nu_lb, tau);
@@ -128,22 +128,24 @@ for iter = 1:timesteps
     v(2:end-1, end) = 0; % uniform flow out 
     % super instable u(2:end-1, end) = -1 + (1./rho(2:end-1, end)).*sum(f(2:end-1, end, [1,3,5]), 3) + 2*sum(f(2:end-1, end, [2,6,9]), 3);
     % Obstacle (BB) 
-    u(cyl_indices) = nan; 
-    v(cyl_indices) = nan; 
+    %u(cyl_indices) = nan;  causes it to be unstable 
+    %v(cyl_indices) = nan; 
 
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
-    if (mod(iter,10==0))
-        uu = sqrt(u.^2+v.^2) / u_lb;
-        imagesc(flipud(uu));
-%       imagesc(flipud(nut)); %%% turbulence viscosity 
-%       imagesc(flipud(omega));
-
-        colorbar
-        axis equal; 
-        drawnow
-    end
+        if (mod(iter,10==0))
+            uu = sqrt(u.^2+v.^2) / u_lb;
+            uu(cyl_indices) = nan; 
+            imagesc(flipud(uu));
+    %       imagesc(flipud(nut)); %%% turbulence viscosity 
+    %       imagesc(flipud(omega));
+            % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
+            rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
+            colorbar
+            axis equal; 
+            drawnow
+        end
 end
 disp('Done!');
