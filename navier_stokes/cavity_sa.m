@@ -22,6 +22,16 @@ tau = 0.52;
 
 nodes = 16641; % total # of nodes used in the sim, 16641 corresponds to 129x129 for GHIA comparison 
 duct_ratio = 1; % ratio for the rectangel such that Length = ratio*Height
+H_p = L_p/ratio; 
+
+% Setting up cylinder area 
+[Y,X] = meshgrid(1:ly,1:lx);
+cyl_diam = 0.4; % Diameter of cylinder 
+cyl_rad = cyl_diam/2; % radius of cylinder 
+x_cyl = L_p/2; % X position of center of cyl 
+y_cyl = H_p/2; % Y position of center of cyl 
+cyl_matrix = (X-x_cyl).^2 + (Y-y_cyl).^2 <= cyl_rad.^2; % Matrix where 1 represents a cylinder node 
+cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
 
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
@@ -62,6 +72,7 @@ f = wall_bc(f,'north');
 f = wall_bc(f,'south');
 f = pressure_bc(f,'east');
 f = inlet_bc(f, u_lb, 'west');
+f = obstacle_bb(f, cyl_indices); 
 % Initialize turbulence stuff.
 d = compute_wall_distances(ny, nx);
 nutilde = nutilde0*ones(ny, nx);
@@ -88,6 +99,7 @@ for iter = 1:timesteps
     f = wall_bc(f,'south');
     f = pressure_bc(f,'east'); 
     f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
+    f = obstacle_bb(f, cyl_indices); 
 
     % Streaming.
     f = stream(f);
@@ -97,10 +109,11 @@ for iter = 1:timesteps
     f = wall_bc(f,'south');
     f = pressure_bc(f,'east');  
     f = inlet_bc(f, u_lb, 'west'); % constant entry speed at the left 
+    f = obstacle_bb(f, cyl_indices); 
     
     % Determine macro variables
     [u,v,rho] = reconstruct_macro_all(f);
-    % Macro BCs 
+    % Apply Macro BCs 
     % North wall 
     u(end,:) = 0; 
     v(end,:) = 0;
@@ -114,6 +127,9 @@ for iter = 1:timesteps
     rho(2:end-1, end) = 1; % constant density 
     v(2:end-1, end) = 0; % uniform flow out 
     % super instable u(2:end-1, end) = -1 + (1./rho(2:end-1, end)).*sum(f(2:end-1, end, [1,3,5]), 3) + 2*sum(f(2:end-1, end, [2,6,9]), 3);
+    % Obstacle (BB) 
+    u(cyl_indices) = nan; 
+    v(cyl_indices) = nan; 
 
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
