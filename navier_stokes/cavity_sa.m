@@ -18,16 +18,16 @@ addpath verif_assets
 L_p = 1;   % Cavity dimension. 
 rho0 = 1;  % Densite initiale 
 Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
-tau = 0.52; 
+tau = 0.51; 
 
-nodes = 16641; % total # of nodes used in the sim, 16641 corresponds to 129x129 for GHIA comparison 
-duct_ratio = 1; % ratio for the rectangel such that Length = ratio*Height
+nodes = 20000; % total # of nodes used in the sim, 16641 corresponds to 129x129 for GHIA comparison 
+duct_ratio = 2; % ratio for the rectangel such that Length = ratio*Height
 H_p = L_p/duct_ratio; 
-cyl_diam = 0.4; % Diameter of cylinder
+cyl_diam = 0.2; % Diameter of cylinder
  
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
-u_lb = 0.18; 
+u_lb = 0.15; 
 
 %%% Simulation parameters.
 % Derived domain nodes ; considering dx=dy=dh
