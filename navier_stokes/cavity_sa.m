@@ -13,6 +13,7 @@ addpath basic
 addpath bc
 addpath turbulence
 addpath verif_assets
+addpath obstacles
 
 %%% Physical base parameters.
 L_p = 1;   % Cavity dimension. 
@@ -51,8 +52,8 @@ dh = dx_p;
 [X,Y] = meshgrid(1:nx,1:ny);
 cyl_rad_nodes = round(cyl_diam/(2*dx_p)) + 1; % cyl radius expressed in nodes
 x_cyl = nx/2; % X position of center of cyl 
-y_cyl = ny/2; % Y position of center of cyl 
-cyl_matrix = (X-x_cyl).^2 + (Y-y_cyl).^2 <= cyl_rad_nodes.^2; % Matrix where 1 represents a cylinder node 
+y_cyl = ny/2; % Y position of center of cyl
+cyl_matrix = generate_obstacle_matrix(x_center, y_center, 'caracteristic_length', cyl_diam, 'type', 'circle');  % Matrix where 1 represents a cylinder node 
 cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
 
 % Displaying info 
