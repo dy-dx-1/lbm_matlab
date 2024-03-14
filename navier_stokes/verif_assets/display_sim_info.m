@@ -1,4 +1,4 @@
-function display_sim_info(L, U, nodes, timesteps, Re, dx, dt, nu_lb, tau)
+function display_sim_info(L, U, nodes, timesteps, Re, dx, dt, u_lb, tau)
     % Displays relevant simulation information 
     disp("--------Simulation started--------"); 
     disp("***Simulation parameters***"); 
@@ -12,7 +12,7 @@ function display_sim_info(L, U, nodes, timesteps, Re, dx, dt, nu_lb, tau)
     disp(["Timestep dt: " num2str(dt)]); 
     disp(["Total time simulated: " num2str(dt*timesteps)]);
     disp(["----"]); 
-    disp(["LB viscosity: " num2str(nu_lb)]); 
+    disp(["Lattice speed: " num2str(u_lb)]); 
     disp(["Relaxation time: " num2str(tau)]); 
     disp(["***Stability checks***"]); 
     ratio_relax_dt = tau/dt; 
