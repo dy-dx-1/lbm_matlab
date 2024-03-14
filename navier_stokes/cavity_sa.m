@@ -16,29 +16,23 @@ addpath verif_assets
 
 %%% Physical base parameters.
 L_p = 1;   % Cavity dimension. 
-U_p = 1;   % Cavity lid velocity.
+%U_p = 1;   % Cavity lid velocity.
 rho0 = 1;  % Densite initiale 
-nu_p = 0;  % sert a  setup le choix d'imposer viscosite ou nombre de Reynolds 
+
 nodes = 129;
 total_time = 20; %temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
-u_lb = 0.1; 
 
 %%% Simulation parameters.
-Re = 3200; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
-%nu_p = 1.2e-3; % 1.586e-5; % Viscosite cinematique, commenter pour imposer Reynolds 
-if (nu_p~=0) % Dans ce cas, nu_p n'a pas ete update, donc il n'est pas commente et il faut evaluer Re avec sa valeur 
-    disp("nu_p impose, Re calcule a partir de nouvelle valeur de nu_p.");
-else 
-    disp("Re impose, nu_p impose a partir de Re"); 
-    nu_p = L_p*U_p / Re; 
-end
-disp(strcat("nu_p = ", num2str(nu_p)));
+Re = 100; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
+tau = 0.809
+u_lb = 0.1; 
 
 dx_p = L_p/(nodes-1); 
 dt_p=u_lb*dx_p;
-nu_lb = nu_p*dt_p/(dx_p*dx_p);
-tau = 3*nu_lb + 0.5; 
+nu_lb = (tau-0.5)/3; 
+%nu_lb = nu_p*dt_p/(dx_p*dx_p);
+%tau = 3*nu_lb + 0.5; 
 omega = 1/tau;
 
 timesteps = round(total_time/dt_p); 
