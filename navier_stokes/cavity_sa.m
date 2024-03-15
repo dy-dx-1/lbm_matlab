@@ -15,34 +15,34 @@ addpath turbulence
 addpath verif_assets
 
 %%% Physical base parameters.
-L_p = 2;   % Cavity dimension. 
-U_p = 1;   % Cavity lid velocity.
+L_p = 4;   % Cavity dimension. 
+nu_p = 0.1; % Viscosite cinematique 
 rho0 = 1;  % Densite initiale 
 
 nodes = 129;
-total_time = 20; %temps de simulation total en sec 
+total_time = 20; % temps de simulation total en sec 
 nutilde0 = 1e-5; % initial nutilde value (should be non-zero for seeding).
 
 %%% Simulation parameters.
-Re = 100; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
-%tau = 0.809;
-u_lb = 0.35; 
+Re = 400; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
 
 dx_p = L_p/(nodes-1); 
 % dt_p chosen following diffusive scaling (p.278 Krüger book) such as dt_p proportional dx_p^2 
-alpha = u_lb/dx_p; 
-dt_p = alpha*dx_p*dx_p; 
+%alpha = u_lb/dx_p;  % u_lb = dt/dx --> u_lb = alpha*dx
+%dt_p = alpha*dx_p*dx_p;
 
-%nu_lb = (tau-0.5)/3; 
-%U_p = (Re*(dx_p^2)*nu_lb)/(L_p*dt_p);
-nu_p = L_p*U_p/Re; 
-nu_lb = nu_p*alpha; 
-tau = 3*nu_lb + 0.5; 
+%%% testing
+tau = 0.809;
+u_lb = 0.03; 
+nu_lb = (tau-0.5)/3;  % 0.103 avec tau = 0.809
+dt_p = (nu_p/nu_lb)*u_lb*u_lb; 
+
+U_p = Re*nu_p/L_p; %Vitesse de la paroi en m/s 
 omega = 1/tau;
 
 timesteps = round(total_time/dt_p); 
 
-%% testing zone 
+% Setting calculation params
 dt = dt_p; 
 dh = dx_p; 
 
@@ -70,16 +70,8 @@ nutilde = nutilde0*ones(nodes,nodes);
 % Main loop.
 disp(['Running ' num2str(timesteps) ' timesteps...']);
 for iter = 1:timesteps
-    if (mod(iter,timesteps/10)==0)
-        disp(['Ran ' num2str(iter) ' iterations']);
-        % extracting velocity data along the middle 
-        u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 
-        v_center = flipud(extractRowOrColumn(v, 'row', round(nodes/2)))/u_lb; % v along the horizontal line at center 
-        % displaying velocities in array form 
-        out_center_speeds = zeros(nodes, 2); 
-        out_center_speeds(:,1) = u_center; 
-        out_center_speeds(:,2) = v_center; 
-        disp(out_center_speeds); 
+    if (mod(iter,round(timesteps/10))==0)
+        disp(['Ran ' num2str(iter) ' iterations out of ' num2str(timesteps) '---']);
     end
     
     % Collision.
@@ -114,6 +106,8 @@ for iter = 1:timesteps
     
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%COMMENT/UNCOMMENT TO SPEED UP SIMULATION
+    %{
     if (mod(iter,10==0))
         uu = sqrt(u.^2+v.^2) / u_lb;
         imagesc(flipud(uu));
@@ -124,5 +118,14 @@ for iter = 1:timesteps
         axis equal; 
         drawnow
     end
+    %}
 end
-disp('Done!');
+% Exctracting velocity data along the middle for validation with GHIA
+u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 
+v_center = flipud(extractRowOrColumn(v, 'row', round(nodes/2)))/u_lb; % v along the horizontal line at center 
+% displaying velocities in array form 
+out_center_speeds = zeros(nodes, 2); 
+out_center_speeds(:,1) = u_center; 
+out_center_speeds(:,2) = v_center; 
+disp(out_center_speeds); 
+disp('**************Done!****************');
