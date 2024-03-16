@@ -104,6 +104,12 @@ for iter = 1:timesteps
     v(:,end) = 0;
     [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
     
+    % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
+    if (any(isnan(u(2:end-1,2:end-1))))
+        disp('Error: NaNs in u matrix. Exiting...');
+        return;
+    end
+
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%COMMENT/UNCOMMENT TO SPEED UP SIMULATION
