@@ -15,7 +15,7 @@ addpath turbulence
 addpath verif_assets
 
 %%% Physical base parameters.
-L_p = 3;   % Cavity dimension. 
+L_p = 4;   % Cavity dimension. 
 nu_p = 0.05; % Viscosite cinematique 
 rho0 = 1;  % Densite initiale 
 
@@ -32,8 +32,8 @@ dx_p = L_p/(nodes-1);
 %dt_p = alpha*dx_p*dx_p;
 
 %%% testing
-tau = 0.65;
-u_lb = 0.03; 
+tau = 0.809;
+u_lb = 0.05; 
 nu_lb = (tau-0.5)/3;  % nu_lb = 0.103 avec tau = 0.809
 dt_p = (nu_p/nu_lb)*u_lb*u_lb; 
 
