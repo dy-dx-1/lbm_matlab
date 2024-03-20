@@ -1,8 +1,6 @@
 function obj_matrix = generate_obstacle_matrix(X_mesh, Y_mesh, center_x, center_y, caracteristic_length, type) 
     if type == "circle"
     % Caracteristic length is expected to be the radius of the circle
-    disp(size(X_mesh));
-    disp(size(Y_mesh));
     obj_matrix = ((X_mesh-center_x).^2 + (Y_mesh-center_y).^2) <= (caracteristic_length.^2);
     end 
     if type == "rectangle"
