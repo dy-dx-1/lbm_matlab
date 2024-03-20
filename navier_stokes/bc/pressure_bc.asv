@@ -36,17 +36,16 @@ function f = pressure_bc(f, side)
         f(2:end-1, end, 7) = -f(2:end-1, end, 9) + (2*w_9*rho_boundary.*(1+(((u_vect_w*c_9).^2)/(2*(cs^4)))-((vecnorm(u_vect_w, 2, 2).^2)/(2*(cs^2)))));
         f(2:end-1, end, 8) = -f(2:end-1, end, 6) + (2*w_6*rho_boundary.*(1+(((u_vect_w*c_6).^2)/(2*(cs^4)))-((vecnorm(u_vect_w, 2, 2).^2)/(2*(cs^2)))));
 
+            % MICROSCOPIC BOUNDARY CONDITIONS: OUTLET (Zou/He BC)
+        f(2:end-1, end, 4) = f(2:end-1, end, 2) - 2/3*rho_boundary.*u_b(:,2:end-1,col); 
         
-        %{ 
-        %%% UNCOMMENT TO APPLY ZOU/HE BC
-        f(2:end-1, end, 4) = f(2:end-1, end, 2) - 2/3*rho_boundary.*u_b; 
-        
-        f(2:end-1, end, 8) = f(2:end-1, end, 6) + 1/2*(f(2:end-1, end, 3)-f(2:end-1, end, 5)) ... 
-                                          - 1/2*rho_boundary.*v_b ...
-                                          - 1/6*rho_boundary.*u_b; 
+        f(2:end-1, end, 8) = f(2:end-1, end, 6) + 1/2*(f(3,2:end-1,col)-f(5,2:end-1,col)) ... 
+                                          - 1/2*rho_boundary.*uy(:,2:end-1,col) ...
+                                          - 1/6*rho_boundary.*ux(:,2:end-1,col); 
                                       
-        f(2:end-1, end, 7) = f(2:end-1, end, 9) + 1/2*(f(2:end-1, end, 5)-f(2:end-1, end, 3)) ... 
-                                          + 1/2*rho_boundary.*v_b ...
-                                          - 1/6*rho_boundary.*u_b;
-      %} 
+        f(2:end-1, end, 7) = f(2:end-1, end, 9) + 1/2*(f(5,2:end-1,col)-fIn(3,2:end-1,col)) ... 
+                                          + 1/2*rho_boundary.*uy(:,2:end-1,col) ...
+                                          - 1/6*rho_boundary.*ux(:,2:end-1,col);
+        
+        
     end
