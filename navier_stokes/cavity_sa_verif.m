@@ -1,27 +1,37 @@
-% A Lattice Boltzmann (single relaxation time) D2Q9 solver,
-% with the Spalart Allmaras turbulence model, on a lid-driven cavity. 
+% UNDER CONSTRUCTION
+
+% A Lattice Boltzmann Multiple Relaxation Time D2Q9 solver,
+% with a Spalart Allmaras turbulence model, on a lid-driven cavity.
+% This features a non-lattice-aligned wall! 
 % Cell centers (nodes) are placed on the boundaries. 
 % Author: Robert Lee
 % Email: rlee32@gatech.edu
-
-% Modifications au code a  des fins de validation faites par Nicolas Sarabia-Benoit 
-% Dans le cadre du cours MEC3900 - Projet Integrateur III, a  Polytechnique Montreal 
 
 clear;close all;clc;
 
 addpath basic
 addpath bc
-addpath turbulence
 addpath verif_assets
 
+% Algorithm steps:
+% Initialize meso (f)
+% Apply meso BCs
+% Determine macro variables and apply macro BCs
+% Loop:
+%   Collide
+%   Apply meso BCs
+%   Stream
+%   Apply meso BCs?
+%   Determine macro variables and apply macro BCs
+
 % Physical parameters.
-Re = 3200; 
+Re = 7500; 
 rho0 = 1;
 % Discrete/numerical parameters.
-nodes = 175;
-total_time = 20; % in seconds 
+nodes = 229;
+total_time = 200; % in seconds 
 
-tau = 0.52; % relaxation time 
+tau = 0.535; % relaxation time 
 nu_lb = (tau-0.5)/3; % kinematic viscosity in lb units
 
 % Derived discrete parameters.
@@ -31,31 +41,37 @@ dt = nu_lb*(dh^2)*Re;
 omega = 1 / tau;
 u_lb = dt / dh;
 timesteps = round(total_time/dt); 
+
 % Displaying info 
 %placeholderwhile testing%%%%%%%%%%%%%
 L_p = NaN; 
 U_p = NaN;
 nu_p = NaN;
-nutilde0 = (nu_lb*dh*dh)/dt; % initial nutilde value (should be non-zero for seeding).
 display_sim_info(L_p, U_p, nodes, timesteps, Re, dh, dt, u_lb, tau);
 
-% Determine macro variables and apply macro BCs
-% Initialize macro, then meso.
-rho = rho0*ones(nodes,nodes);
-u = zeros(nodes,nodes);
-v = zeros(nodes,nodes);
-u(end,2:end-1) = u_lb;
+
 % Initialize.
-f = compute_feq(rho,u,v);
+f = ones(nodes,nodes,9);
+nutilde = 1.2e-3*ones(nodes,nodes);
 % Apply meso BCs.
 f = moving_wall_bc(f,'north',u_lb);
 f = wall_bc(f,'south');
 f = wall_bc(f,'east');
 f = wall_bc(f,'west');
-% Initialize turbulence stuff.
-d = compute_wall_distances(nodes);
-nutilde = nutilde0*ones(nodes,nodes);
-[omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
+% Determine macro variables and apply macro BCs
+[u,v,rho] = reconstruct_macro_all(f);
+u(end,2:end-1) = u_lb;
+v(end,2:end-1) = 0;
+u(1,:) = 0;
+v(1,:) = 0;
+u(:,1) = 0;
+v(:,1) = 0;
+u(:,end) = 0;
+v(:,end) = 0;
+nutilde(1,:) = 0;
+nutilde(end,:) = 0;
+nutilde(:,1) = 0;
+nutilde(:,end) = 0;
 
 % Main loop.
 disp(['Running ' num2str(timesteps) ' timesteps...']);
@@ -65,7 +81,7 @@ for iter = 1:timesteps
     end
     
     % Collision.
-    f = collide_sa(f, u, v, rho, omega);
+    f = collide_mrt(f, u, v, rho, omega);
     
     % Apply meso BCs.
     f = moving_wall_bc(f,'north',u_lb);
@@ -92,27 +108,21 @@ for iter = 1:timesteps
     v(:,1) = 0;
     u(:,end) = 0;
     v(:,end) = 0;
-    [omega, nut, nutilde] = update_nut(nutilde,nu_lb,dt,dh,d,u,v);
-    
+
     % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
     if (any(isnan(u(2:end-1,2:end-1))))
         disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
         return;
     end
-
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%COMMENT/UNCOMMENT TO SPEED UP SIMULATION
-    %{
-    if (mod(iter,10==0))
+    % VIS COMMENTED FOR FASTER VERIFICATION!!! 
+    %{  
+    if (mod(iter,10)==0)
         uu = sqrt(u.^2+v.^2) / u_lb;
         imagesc(flipud(uu));
-%       imagesc(flipud(nut)); %%% turbulence viscosity 
-%       imagesc(flipud(omega));
-
         colorbar
-        axis equal; 
-        drawnow
+        axis equal off; drawnow
     end
     %}
 end
@@ -125,3 +135,4 @@ out_center_speeds(:,1) = u_center;
 out_center_speeds(:,2) = v_center; 
 disp(out_center_speeds); 
 disp('**************Done!****************');
+disp('Done!');
