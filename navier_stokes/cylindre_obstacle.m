@@ -79,8 +79,13 @@ for iter = 1:timesteps
     f = apply_meso_obs(f, u_lb, cyl_indices); 
     
     % Apply macro variables
-    [u,v,rho] = apply_macro_obs(f, u_lb);
-
+    [u,v,rho] = apply_macro_obs(f, u_lb); 
+    
+    average_density = mean(rho, 'all');
+    fileID = fopen('C:/Users/Nicolas/Downloads/average_density.txt', 'a');
+    fprintf(fileID, '%f\n', average_density); 
+    fclose(fileID); 
+    disp(average_density); % displaying average density to check for conservation
     % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
     if (any(isnan(u(2:end-1,2:end-1))))
         disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
