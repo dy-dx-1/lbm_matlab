@@ -7,3 +7,7 @@ function obj_matrix = generate_obstacle_matrix(X_mesh, Y_mesh, center_x, center_
       % caracteristic length is expected to be the length of a side of rectangle
       obj_matrix = (X_mesh >= center_x - caracteristic_length) & (X_mesh <= center_x + caracteristic_length) & (Y_mesh >= center_y - caracteristic_length) & (Y_mesh <= center_y + caracteristic_length);
     end 
+    if type == "none"
+        % to facilitate tests without obstacle
+        obj_matrix = zeros(size(X_mesh));
+    end
