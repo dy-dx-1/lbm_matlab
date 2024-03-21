@@ -78,9 +78,9 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = apply_meso_obs(f, u_lb, cyl_indices); 
     
-    % Determine macro variables
+    % Apply macro variables
     [u,v,rho] = apply_macro_obs(f, u_lb);
-    
+
     % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
     if (any(isnan(u(2:end-1,2:end-1))))
         disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
@@ -89,12 +89,19 @@ for iter = 1:timesteps
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
     %if (mod(iter,10)==0) uncomment to only visualise every other iter
+        subplot(2,1,1); 
         uu = sqrt(u.^2+v.^2) / u_lb;
         uu(cyl_indices) = nan; 
         imagesc(flipud(uu));
-%       imagesc(flipud(nut)); %%% turbulence viscosity 
         % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
         rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
+        colorbar
+        axis equal; 
+        
+        subplot(2,1,2); 
+        % Getting pressure field & displaying it 
+        p = rho.*(1/3)*((dh/dt))^2;      
+        contourf(p, 50);
         colorbar
         axis equal; 
         drawnow
