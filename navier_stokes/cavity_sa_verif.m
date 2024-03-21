@@ -109,22 +109,33 @@ for iter = 1:timesteps
     u(:,end) = 0;
     v(:,end) = 0;
 
+    average_density = mean(rho, 'all');
+    fileID = fopen('C:/Users/Nicolas/Downloads/average_density.txt', 'a');
+    fprintf(fileID, '%f\n', average_density); 
+    fclose(fileID); 
+    disp(average_density); % displaying average density to check for conservation
     % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
     if (any(isnan(u(2:end-1,2:end-1))))
         disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
         return;
-    end
+    end    
     % VISUALIZATION
     % Modified from Jonas Latt's cavity code on the Palabos website.
-    % VIS COMMENTED FOR FASTER VERIFICATION!!! 
-    %{  
-    if (mod(iter,10)==0)
-        uu = sqrt(u.^2+v.^2) / u_lb;
+    %if (mod(iter,10)==0) uncomment to only visualise every other iter
+        subplot(2,1,1); 
+        uu = sqrt(u.^2+v.^2) / u_lb; 
         imagesc(flipud(uu));
         colorbar
-        axis equal off; drawnow
-    end
-    %}
+        axis equal; 
+        
+        subplot(2,1,2); 
+        % Getting pressure field & displaying it 
+        p = rho.*(1/3)*((dh/dt))^2;      
+        contourf(p, 50);
+        colorbar
+        axis equal; 
+        drawnow
+    %end
 end
 % Exctracting velocity data along the middle for validation with GHIA
 u_center = flipud(extractRowOrColumn(u, 'col', round(nodes/2)))/u_lb; % u along the vertical line at center 

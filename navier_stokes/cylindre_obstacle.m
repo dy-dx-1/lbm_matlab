@@ -42,7 +42,7 @@ omega = 1/tau; % relaxation parameter
 [X,Y] = meshgrid(1:nx,1:ny);
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 x_cyl = round(nx/3); % X position of center of cyl 
-y_cyl = round(ny/2); % Y position of center of cyl
+y_cyl = round(ny/2)+1; % Y position of center of cyl, slightly offset 
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
 cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
 
@@ -81,11 +81,14 @@ for iter = 1:timesteps
     % Apply macro variables
     [u,v,rho] = apply_macro_obs(f, u_lb); 
     
+    %{
+    %AVERAGE DENSITY VISUALISATION
     average_density = mean(rho, 'all');
     fileID = fopen('C:/Users/Nicolas/Downloads/average_density.txt', 'a');
     fprintf(fileID, '%f\n', average_density); 
     fclose(fileID); 
     disp(average_density); % displaying average density to check for conservation
+    %} 
     % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
     if (any(isnan(u(2:end-1,2:end-1))))
         disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
@@ -99,16 +102,18 @@ for iter = 1:timesteps
         uu(cyl_indices) = nan; 
         imagesc(flipud(uu));
         % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
-        rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
+        rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes+1 cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
         colorbar
         axis equal; 
         
+        %{
         subplot(2,1,2); 
         % Getting pressure field & displaying it 
         p = rho.*(1/3)*((dh/dt))^2;      
         contourf(p, 50);
         colorbar
         axis equal; 
+        %} 
         drawnow
     %end
 end
