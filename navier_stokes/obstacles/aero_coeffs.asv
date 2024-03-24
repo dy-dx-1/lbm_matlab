@@ -17,12 +17,12 @@ function [cd, cl] = aero_coeffs(f, obst_indices, dh, dt, calc_coeff)
     delta_P = [0, 0]; 
 
     for i=2:9
-        summed_opps = (f_reshaped(i,obst_indices) + f_reshaped(opp_cs(i),obst_indices));
+        summed_opps = f_reshaped(i,obst_indices) + f_reshaped(opp_cs(i),obst_indices);
         sum_obj_elements = sum(summed_opps); 
         delta_P = delta_P + sum_obj_elements*c(i,:); 
-        
+        disp
     end  
-    
+    return 
     delta_P = delta_P.*(dh^2); 
     F = delta_P./dt;  % in the shape of [Fx Fy] 
     % NOTE: CHECK AND CONFIRM UNIT MATCHES WITH CALC_COEFF!!!!!!!!!

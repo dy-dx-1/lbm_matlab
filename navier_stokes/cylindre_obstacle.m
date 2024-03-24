@@ -46,6 +46,9 @@ y_cyl = round(ny/2)+1; % Y position of center of cyl, slightly offset
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
 cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
 
+%%%%%testing boundary indices 
+b_cyl_indices = find(mark_boundary_nodes(cyl_matrix)); 
+cyl_indices = b_cyl_indices; 
 % prepping calculations for lift and drag coeff (see "obstacles/aero_coeffs.m")
 calc_coeff = (2/(rho0*(u_lb^2)*2*cyl_rad_nodes)); 
 % Displaying info 
@@ -74,12 +77,11 @@ for iter = 1:timesteps
     % Apply meso BCs.
     f = apply_meso_obs(f, u_lb, cyl_indices); 
 
-    % Streaming.
-    f = stream(f);
-    
     % Calculation of drag 
-    [cd, cl] = aero_coeffs(f, cyl_indices, dh, dt, calc_coeff); 
-    
+    [cd, cl] = aero_coeffs(f, b_cyl_indices, dh, dt, calc_coeff); 
+    disp(cd); 
+    % Streaming.
+    f = stream(f);    
     
     % Apply meso BCs.
     f = apply_meso_obs(f, u_lb, cyl_indices); 
@@ -108,7 +110,7 @@ for iter = 1:timesteps
         uu(cyl_indices) = nan; 
         imagesc(flipud(uu));
         % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
-        rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes-1 cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
+        %rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes-1 cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
         colorbar
         axis equal; 
         
