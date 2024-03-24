@@ -1,4 +1,4 @@
-function [u, v, rho] = apply_macro_obs(f, u_in)
+function [u, v, rho] = apply_macro_obs(f, u_in, i_obs_indices)
     addpath basic
     % Applies macroscopic scale BCs for the general case of solid top and bottom
     % walls, west constant speed inlet and east constant pressure outlet
@@ -19,7 +19,10 @@ function [u, v, rho] = apply_macro_obs(f, u_in)
     rho(2:end-1, end) = 1; % constant density 
     v(2:end-1, end) = 0; % uniform flow out 
     % super instable u(2:end-1, end) = -1 + (1./rho(2:end-1, end)).*sum(f(2:end-1, end, [1,3,5]), 3) + 2*sum(f(2:end-1, end, [2,6,9]), 3);
- 
+    % Object
+    u(i_obs_indices) = 0; 
+    v(i_obs_indices) = 0; 
+    rho(i_obs_indices) = 1; % other values cause noise 
 end
 
 

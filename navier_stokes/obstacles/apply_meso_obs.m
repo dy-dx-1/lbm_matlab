@@ -1,4 +1,4 @@
-function [f] = apply_meso_obs(f, u_in, obstacle_indices)
+function [f] = apply_meso_obs(f, u_in, b_obs_indices)
     addpath bc
 % Applies mesoscopic scale BCs for the general case of solid top and bottom
 % walls, west constant speed inlet and east constant pressure outlet 
@@ -6,6 +6,5 @@ function [f] = apply_meso_obs(f, u_in, obstacle_indices)
     f = wall_bc(f,'south');
     f = pressure_bc(f,'east');  
     f = inlet_bc(f, u_in, 'west'); % constant entry speed at the left 
-    f = obstacle_bb(f, obstacle_indices); 
+    f = obstacle_bb(f, b_obs_indices); 
 end
-

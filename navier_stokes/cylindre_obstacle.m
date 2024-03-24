@@ -16,7 +16,7 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters.
-Re = 100; % Nombre de Reynolds, a  commenter pour imposer viscosite cinematique 
+Re = 100; 
 tau = 0.809; 
 rho0 = 1; 
 total_time = 20; 
@@ -44,15 +44,17 @@ cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 x_cyl = round(nx/3); % X position of center of cyl 
 y_cyl = round(ny/2)+1; % Y position of center of cyl, slightly offset 
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
-cyl_indices = find(cyl_matrix); % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.html
+boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix);
+% linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.htm
+a_cyl_indices = find(cyl_matrix); % boundary and inside 
+b_cyl_indices = find(boundary_cyl_matrix);  % only boundary
+i_cyl_indices = find(cyl_matrix-boundary_cyl_matrix);  % only inside without boundary
 
-%%%%%testing boundary indices 
-b_cyl_indices = find(mark_boundary_nodes(cyl_matrix)); 
-cyl_indices = b_cyl_indices; 
+% Displaying simulation info 
+display_sim_info(nx, ny, timesteps, Re, dh, dt, nu_lb, tau);
+
 % prepping calculations for lift and drag coeff (see "obstacles/aero_coeffs.m")
 calc_coeff = (2/(rho0*(u_lb^2)*2*cyl_rad_nodes)); 
-% Displaying info 
-display_sim_info(nx, ny, timesteps, Re, dh, dt, nu_lb, tau);
 
 % Initialize.
 rho = rho0*ones(ny,nx);
@@ -61,33 +63,29 @@ v = zeros(ny,nx);
 u(2:end-1,1) = u_lb;
 
 f = compute_feq(rho,u,v);
-% Apply meso BCs.
-f = apply_meso_obs(f, u_lb, cyl_indices); 
+f = apply_meso_obs(f, u_lb, b_cyl_indices); 
 
 % Main loop.
-disp(['Running ' num2str(timesteps) ' timesteps...']);
-for iter = 1:timesteps
-    if (mod(iter,round(timesteps/10))==0)
-        disp(['Running ... ' num2str(iter/timesteps*100) '% completed']);
-    end
-    
+disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
+for iter = 1:timesteps    
     % Collision.
     f = collide_mrt(f, u, v, rho, omega);
     
     % Apply meso BCs.
-    f = apply_meso_obs(f, u_lb, cyl_indices); 
+    f = apply_meso_obs(f, u_lb, b_cyl_indices); 
 
-    % Calculation of drag 
+    % Calculation of drag and lift coefficient 
     [cd, cl] = aero_coeffs(f, b_cyl_indices, dh, dt, calc_coeff); 
     disp(cd); 
+    
     % Streaming.
     f = stream(f);    
     
     % Apply meso BCs.
-    f = apply_meso_obs(f, u_lb, cyl_indices); 
+    f = apply_meso_obs(f, u_lb, b_cyl_indices); 
     
     % Apply macro variables
-    [u,v,rho] = apply_macro_obs(f, u_lb); 
+    [u,v,rho] = apply_macro_obs(f, u_lb, i_cyl_indices); 
     
     %{
     %AVERAGE DENSITY VISUALISATION
@@ -102,12 +100,14 @@ for iter = 1:timesteps
         disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
         return;
     end    
-    % VISUALIZATION
-    % Modified from Jonas Latt's cavity code on the Palabos website.
-    %if (mod(iter,10)==0) uncomment to only visualise every other iter
+    
+    % VISUALIZATION & progress tracking 
+    if (mod(iter,round(timesteps/10))==0)
+        disp(['Running ... ' num2str(iter/timesteps*100) '% completed']);
+    end
         subplot(2,1,1); 
         uu = sqrt(u.^2+v.^2) / u_lb;
-        uu(cyl_indices) = nan; 
+        uu(a_cyl_indices) = nan; 
         imagesc(flipud(uu));
         % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
         %rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes-1 cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
@@ -123,7 +123,7 @@ for iter = 1:timesteps
         axis equal; 
         %} 
         drawnow
-    %end
+    %end UNCOMMENT AND COMMENT THE NEXT ONE UP FOR LIMITED VISUALISATION
 end
 %{
     TODO: FORMAT APPROPIATELY SO THAT IT OUTPUTS 2 COLUMSN EVEN THOUGH NX!=NY
