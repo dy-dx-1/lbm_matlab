@@ -42,8 +42,8 @@ omega = 1/tau; % relaxation parameter
 [X,Y] = meshgrid(1:nx,1:ny);
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 x_cyl = round(nx/3); % X position of center of cyl 
-y_cyl = round(ny/2)+1; % Y position of center of cyl, slightly offset 
-cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
+y_cyl = round(ny/2); % Y position of center of cyl, slightly offset 
+cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'rectangle');  % Matrix where 1 represents a cylinder node 
 boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix);
 % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.htm
 a_cyl_indices = find(cyl_matrix); % boundary and inside 
@@ -105,10 +105,18 @@ for iter = 1:timesteps
     if (mod(iter,round(timesteps/10))==0)
         disp(['Running ... ' num2str(iter/timesteps*100) '% completed']);
     end
-        subplot(2,1,1); 
+        %subplot(2,1,1); 
         uu = sqrt(u.^2+v.^2) / u_lb;
         uu(a_cyl_indices) = nan; 
         imagesc(flipud(uu));
+        % Arrow vector field 
+        hold on; 
+        sample_factor = 3; 
+        sample_u = flipud(u(1:sample_factor:end, 1:sample_factor:end));
+        sample_v = flipud(v(1:sample_factor:end, 1:sample_factor:end));
+        [x_sampled, y_sampled] = meshgrid(1:sample_factor:size(u,2), 1:sample_factor:size(u,1));
+        quiver(flipud(x_sampled), flipud(y_sampled), sample_u, sample_v, 'r'); 
+        hold off; 
         % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
         %rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes-1 cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
         colorbar
