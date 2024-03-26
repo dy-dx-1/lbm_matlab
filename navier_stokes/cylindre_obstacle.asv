@@ -151,12 +151,6 @@ out_center_speeds = zeros(nodes, 2);
 out_center_speeds(:,1) = u_center; 
 out_center_speeds(:,2) = v_center; 
 disp(out_center_speeds); 
-
-%%%% DISPLAYING STREAMLINES [note: idk if streamlines is protected word] 
-% Streamlines 
-streamlines = streamline(x_sampled, y_sampled, sample_u, sample_v, xstart, ystart); 
-set(streamlines, 'color', 'black'); 
-
 disp('**************Done!****************');
 disp('Done!');
 %} 
