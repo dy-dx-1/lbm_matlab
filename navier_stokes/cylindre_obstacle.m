@@ -64,6 +64,15 @@ N = 75; % number of seed locations ; used to display streamlines
 xstart = nx*rand(N,1); 
 ystart = ny*rand(N,1);
 
+%%% Visualization choices 
+% This is a cell array that contains the visualization options for the simulation
+% It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
+% To not call a function use @placeholder
+% Functions are defined in /verif_assets/
+vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
+update_every_iter = 1; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
+show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
+
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------
 % Initialization
 rho = rho0*ones(ny,nx);
@@ -76,71 +85,9 @@ f = apply_meso_obs(f, u_lb, b_cyl_indices);
 
 % Main loop
 disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
-for iter = 1:timesteps    
-    % Collision
-    f = collide_mrt(f, u, v, rho, omega);
-    
-    % Apply meso BCs
-    f = apply_meso_obs(f, u_lb, b_cyl_indices); 
-
-    % Calculation of drag and lift coefficient 
-    [cd, cl] = aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff); 
-    disp([cd, cl]); 
-    
-    % Streaming
-    f = stream(f);    
-    
-    % Apply meso BCs
-    f = apply_meso_obs(f, u_lb, b_cyl_indices); 
-    
-    % Apply macro variables
-    [u,v,rho] = apply_macro_obs(f, u_lb, i_cyl_indices); 
-    
-    %{
-    %AVERAGE DENSITY VISUALISATION
-    average_density = mean(rho, 'all');
-    fileID = fopen('C:/Users/Nicolas/Downloads/average_density.txt', 'a');
-    fprintf(fileID, '%f\n', average_density); 
-    fclose(fileID); 
-    disp(average_density); % displaying average density to check for conservation
-    %} 
-    % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
-    if (any(isnan(u(2:end-1,2:end-1))))
-        disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');
-        return;
-    end    
-    
-    % VISUALIZATION & progress tracking 
-    if (mod(iter,round(timesteps/10))==0)
-        disp(['Running ... ' num2str(iter/timesteps*100) '% completed']);
-    end
-        %subplot(2,1,1); 
-        uu = sqrt(u.^2+v.^2) / u_lb;
-        uu(a_cyl_indices) = nan; 
-        imagesc(flipud(uu));
-        % Arrow vector field 
-        hold on;
-        sample_u = flipud(u(1:sample_factor:end, 1:sample_factor:end));
-        sample_v = flipud(v(1:sample_factor:end, 1:sample_factor:end));
-        quiver(x_sampled, y_sampled, sample_u, sample_v, 'r'); 
-        hold off; 
-
-        % rectangle function is easiest to draw a circle, pos vector outlines lower left corner and height and width, curvature makes it a circle 
-        %rectangle('Position', [x_cyl-cyl_rad_nodes y_cyl-cyl_rad_nodes-1 cyl_rad_nodes*2 cyl_rad_nodes*2], 'Curvature', [1 1], 'FaceColor', 'red')
-        colorbar
-        axis equal; 
-        
-        %{
-        subplot(2,1,2); 
-        % Getting pressure field & displaying it 
-        p = rho.*(1/3)*((dh/dt))^2;      
-        contourf(p, 50);
-        colorbar
-        axis equal; 
-        %} 
-        drawnow
-    %end UNCOMMENT AND COMMENT THE NEXT ONE UP FOR LIMITED VISUALISATION
-end
+run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, ... 
+             dh, dt, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, ...
+             update_every_iter, vis, show_vector_field);
 %{
     TODO: FORMAT APPROPIATELY SO THAT IT OUTPUTS 2 COLUMSN EVEN THOUGH NX!=NY
 % Exctracting velocity data along the middle for validation with GHIA
