@@ -86,7 +86,7 @@ for iter = 1:timesteps
 
     % Calculation of drag and lift coefficient 
     [cd, cl] = aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff); 
-    disp(cd); 
+    disp([cd, cl]); 
     
     % Streaming.
     f = stream(f);    
