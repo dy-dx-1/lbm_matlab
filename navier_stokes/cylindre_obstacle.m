@@ -42,9 +42,10 @@ omega = 1/tau; % relaxation parameter
 [X,Y] = meshgrid(1:nx,1:ny);
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 x_cyl = round(nx/3); % X position of center of cyl 
-y_cyl = round(ny/2); % Y position of center of cyl, slightly offset 
-cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'rectangle');  % Matrix where 1 represents a cylinder node 
-boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix);
+y_cyl = round(ny/2); % Y position of center of cyl
+cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
+boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix); % this code uses halfway BB, so the boundary nodes are technically still fluid nodes
+boundary_links = find_boundary_links(cyl_matrix-boundary_cyl_matrix); % need to use only the 'inside without boundary' because halfwayBB makes it so outher boundary is 'fluid' & in find_boundary_links we use the 0's to find links
 % linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.htm
 a_cyl_indices = find(cyl_matrix); % boundary and inside 
 b_cyl_indices = find(boundary_cyl_matrix);  % only boundary
@@ -84,7 +85,7 @@ for iter = 1:timesteps
     f = apply_meso_obs(f, u_lb, b_cyl_indices); 
 
     % Calculation of drag and lift coefficient 
-    [cd, cl] = aero_coeffs(f, b_cyl_indices, dh, dt, calc_coeff); 
+    [cd, cl] = aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff); 
     disp(cd); 
     
     % Streaming.
