@@ -1,11 +1,7 @@
-% A Lattice Boltzmann (single relaxation time) D2Q9 solver,
-% with the Spalart Allmaras turbulence model, on a lid-driven cavity. 
-% Cell centers (nodes) are placed on the boundaries. 
-% Author: Robert Lee
-% Email: rlee32@gatech.edu
-
-% Modifications du code effectuee dans le cadre du cours MEC3900-Projet Integrateur III
-% faites par Nicolas Sarabia-Benoit, a Polytechnique Montreal 
+% Code simulating turbulent flow around a cylinder using the Lattice Boltzmann Method. 
+% This code is based on the code in "cavity_sa.m" by Robert Lee (rlee32@gatech.edu)
+% and modified by Nicolas Sarabia-Benoit (nicolas.sarabia-benoit@polymtl.ca) in the context
+% of the course MEC3900 at Polytechnique Montreal.
 
 clear;close all;clc;
 
@@ -15,58 +11,61 @@ addpath turbulence
 addpath verif_assets
 addpath obstacles
 
-%%% Base parameters.
-Re = 40; 
-tau = 0.809; 
-rho0 = 1; 
-total_time = 20; 
-% Geometric parameters.
-nx = 135; % total # of nodes used in the sim, 16641 corresponds to 129x129 for GHIA comparison 
-duct_ratio = 3; % ratio for the rectangel such that Length = ratio*Height 
+%%% Base parameters
+Re = 40;          % Reynolds number
+tau = 0.809;      % Relaxation time
+total_time = 20;  % Total simulation time
+rho0 = 1;         % Initial density (adim)
+
+%%% Geometric parameters.
+nx = 135;             % # of nodes in the x direction
+duct_ratio = 3;       % ratio for the rectangular domain such that Length = ratio*Height 
+cyl_size_ratio = 0.2; % Diam of cyl as a fraction of the duct height
 if mod(nx,duct_ratio) ~= 0
     error('nx must be divisible by duct_ratio to keep dx=dy');
 end
-cyl_size_ratio = 0.2; % Diam of cyl as a fraction of the duct height
 
-%%% Derived parameters
+%%% Derived simulation parameters
 ny = nx/duct_ratio; 
-nu_lb = (tau-0.5)/3; % kinematic viscosity in lb units
-dh = 1/(nx-1); % Spacing between nodes in the x and y direction 
-dt = nu_lb*(dh^2)*Re;
-u_lb = dt/dh; % lattice speed 
+nu_lb = (tau-0.5)/3;  % kinematic viscosity in lb units
+dh = 1/(nx-1);        % spacing between nodes in the x and y direction 
+dt = nu_lb*(dh^2)*Re; % time step
+u_lb = dt/dh;         % lattice speed 
 timesteps = round(total_time/dt); % total number of timesteps
-omega = 1/tau; % relaxation parameter
+omega = 1/tau;                    % relaxation parameter
 
-%%% Simulation parameters.
-% Setting up cylinder area
+%%% Derived cylinder parameters
 [X,Y] = meshgrid(1:nx,1:ny);
+x_cyl = round(nx/3);                          % X position of center of cyl 
+y_cyl = round(ny/2);                          % Y position of center of cyl
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
-x_cyl = round(nx/3); % X position of center of cyl 
-y_cyl = round(ny/2); % Y position of center of cyl
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
-boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix); % this code uses halfway BB, so the boundary nodes are technically still fluid nodes
-boundary_links = find_boundary_links(cyl_matrix-boundary_cyl_matrix); % need to use only the 'inside without boundary' because halfwayBB makes it so outher boundary is 'fluid' & in find_boundary_links we use the 0's to find links
-% linear indexation of non zero elemetns, will be used to apply BB https://www.mathworks.com/help/matlab/ref/find.htm
+boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix);                               % Matrix where 1 represents ONLY the boundary of the cylinder
+boundary_links = find_boundary_links(cyl_matrix-boundary_cyl_matrix);                % Getting the velocity links for each boundary node, used for momentum exchange
+% Prepping linear indexes of non zero elements, will be used to easily index on cylinder https://www.mathworks.com/help/matlab/ref/find.htm
 a_cyl_indices = find(cyl_matrix); % boundary and inside 
 b_cyl_indices = find(boundary_cyl_matrix);  % only boundary
 i_cyl_indices = find(cyl_matrix-boundary_cyl_matrix);  % only inside without boundary
 
-% Displaying simulation info 
+%%% Displaying simulation info 
 display_sim_info(nx, ny, timesteps, Re, dh, dt, nu_lb, tau, cyl_rad_nodes, cyl_size_ratio);
 
-% prepping calculations for lift and drag coeff (see "obstacles/aero_coeffs.m")
-% and data needed for visualization 
-calc_coeff = (2/(rho0*(u_lb^2)*2*cyl_rad_nodes)); 
-sample_factor = 3; % To have a less dense quiver field
-[x_sampled, y_sampled] = meshgrid(1:sample_factor:nx, 1:sample_factor:ny);
-x_sampled = flipud(x_sampled); 
-y_sampled = flipud(y_sampled); 
+%%% Calculations for lift and drag coeff (see "obstacles/aero_coeffs.m") 
+calc_coeff = (1/(rho0*(u_lb^2)*cyl_rad_nodes)); % cd, cl = vect(F)*calc_coeff
 
-N = 75; % number of seed locations
+%%% Prepping for visualization (to avoid loop calculations)
+% Velocity vector field (quiver)
+sample_factor = 3;             % To have a less dense quiver field
+[x_sampled, y_sampled] = meshgrid(1:sample_factor:nx, 1:sample_factor:ny); 
+x_sampled = flipud(x_sampled); 
+y_sampled = flipud(y_sampled); % flipped to match the image display
+% Streamlines
+N = 75; % number of seed locations ; used to display streamlines 
 xstart = nx*rand(N,1); 
 ystart = ny*rand(N,1);
 
-% Initialize.
+%%% Simulation ---------------------------------------------------------------------------------------------------------------------
+% Initialization
 rho = rho0*ones(ny,nx);
 u = zeros(ny,nx);
 v = zeros(ny,nx);
@@ -75,23 +74,23 @@ u(2:end-1,1) = u_lb;
 f = compute_feq(rho,u,v);
 f = apply_meso_obs(f, u_lb, b_cyl_indices); 
 
-% Main loop.
+% Main loop
 disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
 for iter = 1:timesteps    
-    % Collision.
+    % Collision
     f = collide_mrt(f, u, v, rho, omega);
     
-    % Apply meso BCs.
+    % Apply meso BCs
     f = apply_meso_obs(f, u_lb, b_cyl_indices); 
 
     % Calculation of drag and lift coefficient 
     [cd, cl] = aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff); 
     disp([cd, cl]); 
     
-    % Streaming.
+    % Streaming
     f = stream(f);    
     
-    % Apply meso BCs.
+    % Apply meso BCs
     f = apply_meso_obs(f, u_lb, b_cyl_indices); 
     
     % Apply macro variables
