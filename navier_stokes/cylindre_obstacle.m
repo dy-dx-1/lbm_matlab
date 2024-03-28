@@ -16,7 +16,7 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters.
-Re = 100; 
+Re = 40; 
 tau = 0.809; 
 rho0 = 1; 
 total_time = 20; 
@@ -52,7 +52,7 @@ b_cyl_indices = find(boundary_cyl_matrix);  % only boundary
 i_cyl_indices = find(cyl_matrix-boundary_cyl_matrix);  % only inside without boundary
 
 % Displaying simulation info 
-display_sim_info(nx, ny, timesteps, Re, dh, dt, nu_lb, tau);
+display_sim_info(nx, ny, timesteps, Re, dh, dt, nu_lb, tau, cyl_rad_nodes, cyl_size_ratio);
 
 % prepping calculations for lift and drag coeff (see "obstacles/aero_coeffs.m")
 % and data needed for visualization 

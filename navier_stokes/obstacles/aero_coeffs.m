@@ -28,10 +28,15 @@ function [cd, cl] = aero_coeffs(f, obst_indices, boundary_links, dh, dt, calc_co
             delta_P = delta_P + summed_opps*c(link,:);
         end
     end
-
-    delta_P = delta_P.*(dh^2); 
-    F = delta_P./dt;  % in the shape of [Fx Fy] 
-    % NOTE: CHECK AND CONFIRM UNIT MATCHES WITH CALC_COEFF!!!!!!!!!
+    F = delta_P; % [Fx, Fy] 
+    %{
+    NOTE: CHECK AND CONFIRM UNIT MATCHES WITH CALC_COEFF!!!!!!!!!
+    Dimensionnal approach would be: 
+    %delta_P = delta_P.*(dh^2); 
+    %F = delta_P./dt;  % in the shape of [Fx Fy] 
+    Here we use adim dx=dt=1 because Cd calc_coeff is defined with adim
+    units in the main program 
+    %}
     coeffs = (calc_coeff*F);  
     cd = coeffs(1); 
     cl = coeffs(2); 
