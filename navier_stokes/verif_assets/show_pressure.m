@@ -1,6 +1,6 @@
-function show_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, dh, dt, a_cyl_indices) 
+function show_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices) 
     % Getting pressure field & displaying it 
-    p = rho.*(1/3)*((dh/dt))^2;      
+    p = rho.*pressure_calc_coeff;      
     contourf(p, 50);
     title("Champ de pression")
     xlabel("Noeuds en X") 

@@ -1,4 +1,4 @@
-function [] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, dh, dt, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, update_every_iter, vis, show_vector_field)
+function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, dh, dt, pressure_calc_coeff, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, update_every_iter, vis, show_vector_field)
     % Main loop for LBM simulation
     % Multiple loops were prefered to avoid multiple if statements inside the loop (since we're running so many iterations).
     if update_every_iter==1
@@ -36,7 +36,7 @@ function [] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indic
             end
             
             % calling the function to display the velocity||pressure||both field, putting all params even though they may not be used depending on the function 
-            vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, dh, dt, a_cyl_indices) 
+            vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices) 
             vis{4}(x_cyl, y_cyl, cyl_rad_nodes); % calling the function to display the shape of the obstacle        
         
             drawnow
@@ -76,7 +76,7 @@ function [] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indic
                 end  
                 
                 % calling the function to display the velocity||pressure||both field, putting all params even though they may not be used depending on the function 
-                vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, dh, dt, a_cyl_indices) 
+                vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices) 
                 vis{4}(x_cyl, y_cyl, cyl_rad_nodes); % calling the function to display the shape of the obstacle        
             
                 drawnow

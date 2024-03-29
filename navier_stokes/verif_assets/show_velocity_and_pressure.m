@@ -1,4 +1,4 @@
-function show_velocity_and_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, dh, dt, a_cyl_indices) 
+function show_velocity_and_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices)  
     subplot(2,1,1); 
     uu = sqrt(u.^2+v.^2) / u_lb;
     uu(a_cyl_indices) = nan; 
@@ -18,7 +18,7 @@ function show_velocity_and_pressure(show_vector_field, u, v, u_lb, sample_factor
     axis equal; 
     subplot(2,1,2); 
     % Getting pressure field & displaying it 
-    p = rho.*(1/3)*((dh/dt))^2;      
+    p = rho.*pressure_calc_coeff;      
     contourf(p, 50);
     title("Champ pression")
     xlabel("Noeuds en X") 
