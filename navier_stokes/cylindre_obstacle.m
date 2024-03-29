@@ -73,7 +73,7 @@ ystart = ny*rand(N,1);
 % To not call a function use @placeholder
 % Functions are defined in /verif_assets/
 vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
-update_every_iter = 1; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
+update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
 show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
 
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------

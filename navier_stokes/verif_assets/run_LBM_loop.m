@@ -36,7 +36,7 @@ function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_
             end
             
             % calling the function to display the velocity||pressure||both field, putting all params even though they may not be used depending on the function 
-            vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices) 
+            vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, pressure_calc_coeff, a_cyl_indices) 
             vis{4}(x_cyl, y_cyl, cyl_rad_nodes); % calling the function to display the shape of the obstacle        
         
             drawnow
@@ -76,7 +76,7 @@ function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_
                 end  
                 
                 % calling the function to display the velocity||pressure||both field, putting all params even though they may not be used depending on the function 
-                vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices) 
+                vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, pressure_calc_coeff, a_cyl_indices) 
                 vis{4}(x_cyl, y_cyl, cyl_rad_nodes); % calling the function to display the shape of the obstacle        
             
                 drawnow

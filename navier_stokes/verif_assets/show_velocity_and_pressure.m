@@ -1,4 +1,4 @@
-function show_velocity_and_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, pressure_calc_coeff, a_cyl_indices)  
+function show_velocity_and_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, pressure_calc_coeff, a_cyl_indices)  
     subplot(2,1,1); 
     uu = sqrt(u.^2+v.^2) / u_lb;
     uu(a_cyl_indices) = nan; 
