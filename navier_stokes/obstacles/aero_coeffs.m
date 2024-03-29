@@ -1,4 +1,4 @@
-function [cd, cl] = aero_coeffs(f, obst_indices, boundary_links, dh, dt, calc_coeff)
+function [cd, cl, cp] = aero_coeffs(f, obst_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider)
     % D2Q9
     % Calculates the drag coefficient of the object defined by obst_indices
     % calc_coeff is a constant such that cd, cl = vect(F)*calc_coeff
@@ -39,5 +39,9 @@ function [cd, cl] = aero_coeffs(f, obst_indices, boundary_links, dh, dt, calc_co
     %}
     coeffs = (calc_coeff*F);  
     cd = coeffs(1); 
-    cl = coeffs(2); 
+    cl = coeffs(2);
+    %% Pressure coefficient 
+    pressure_domain = rho.*pressure_calc_coeff; 
+    pressure_boundary = pressure_domain(obst_indices); 
+    cp = (pressure_boundary-p_inf)/(p_divider); 
 end

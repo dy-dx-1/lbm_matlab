@@ -72,7 +72,7 @@ ystart = ny*rand(N,1);
 % It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
 % To not call a function use @placeholder
 % Functions are defined in /verif_assets/
-vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
+vis = {@show_aero_coeffs, @placeholder, @show_velocity, @placeholder};
 update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
 show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
 
@@ -89,7 +89,7 @@ f = apply_meso_obs(f, u_lb, b_cyl_indices);
 % Main loop
 disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
 [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, ... 
-             dh, dt, pressure_calc_coeff, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, ...
+             dh, dt, pressure_calc_coeff, p_inf, p_divider, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, ...
              update_every_iter, vis, show_vector_field);
          
 %%% Post simulation calculations ----------------------------------------------------------------------------------------------

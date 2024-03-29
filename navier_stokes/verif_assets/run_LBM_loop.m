@@ -1,4 +1,4 @@
-function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, dh, dt, pressure_calc_coeff, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, update_every_iter, vis, show_vector_field)
+function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, dh, dt, pressure_calc_coeff, p_inf, p_divider, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, update_every_iter, vis, show_vector_field)
     % Main loop for LBM simulation
     % Multiple loops were prefered to avoid multiple if statements inside the loop (since we're running so many iterations).
     if update_every_iter==1
@@ -10,7 +10,7 @@ function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_
             f = apply_meso_obs(f, u_lb, b_cyl_indices); 
         
             % Calculation of drag and lift coefficient 
-            vis{1}(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff); % calling the function to calculate the aero coeffs
+            vis{1}(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider); % calling the function to calculate the aero coeffs
             
             % Streaming
             f = stream(f);    
@@ -52,7 +52,7 @@ function [u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_
             f = apply_meso_obs(f, u_lb, b_cyl_indices); 
         
             % Calculation of drag and lift coefficient 
-            vis{1}(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff); % calling the function to calculate the aero coeffs
+            vis{1}(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider); % calling the function to calculate the aero coeffs
             
             % Streaming
             f = stream(f);    
