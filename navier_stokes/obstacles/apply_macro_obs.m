@@ -1,5 +1,4 @@
 function [u, v, rho] = apply_macro_obs(f, u_in, i_obs_indices)
-    addpath basic
     % Applies macroscopic scale BCs for the general case of solid top and bottom
     % walls, west constant speed inlet and east constant pressure outlet
     

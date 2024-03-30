@@ -1,5 +1,4 @@
 function [f] = apply_meso_obs(f, u_in, b_obs_indices)
-    addpath bc
 % Applies mesoscopic scale BCs for the general case of solid top and bottom
 % walls, west constant speed inlet and east constant pressure outlet 
     f = wall_bc(f,'north');

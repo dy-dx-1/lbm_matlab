@@ -2,8 +2,4 @@ function show_pressure(show_vector_field, u, v, u_lb, sample_factor, x_sampled, 
     % Getting pressure field & displaying it 
     p = rho.*pressure_calc_coeff;      
     contourf(p, 50);
-    title("Champ de pression")
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
+    % colorbar 

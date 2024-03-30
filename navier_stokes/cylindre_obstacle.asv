@@ -73,7 +73,7 @@ ystart = ny*rand(N,1);
 % To not call a function use @placeholder
 % Functions are defined in /verif_assets/
 vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
-update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
+update_every_iter = 1; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
 show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
 
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------
@@ -96,28 +96,16 @@ disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
 % Displaying speeds on the centerlines 
 display_center_speeds(u, v, u_lb, nx, ny); 
 
-% Last visual update of iters 
+% Last update of iters 
 vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, pressure_calc_coeff, a_cyl_indices);
 fig = gcf; 
 ax = fig.Children; 
-if numel(ax) ~= 1 % checking if were displaying only velocity or velocity and pressure 
-    subplot(2,1,1);
-    title("Champ de vitesse") 
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
-    subplot(2,1,2); 
-    title("Champ de pression") 
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
+if numel(ax) ~= 2 % checking if were displaying only velocity or velocity and pressure 
+    subplot(2,1,1); 
 else 
     xlabel("Noeuds en X") 
     ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
+    
 end 
 % Streamlines 
 show_streamlines(x_sampled, y_sampled, u, v, sample_factor, xstart, ystart); 

@@ -11,8 +11,4 @@ function show_velocity(show_vector_field, u, v, u_lb, sample_factor, x_sampled, 
         quiver(x_sampled, y_sampled, sample_u, sample_v, 'r'); 
         hold off; 
     end 
-    title("Champ de vitesse normalisé par rapport à u_{lb}")
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
+    % colorbar % comment/uncomment to show, adds about 25% running time

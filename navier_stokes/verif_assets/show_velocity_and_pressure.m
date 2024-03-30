@@ -11,17 +11,9 @@ function show_velocity_and_pressure(show_vector_field, u, v, u_lb, sample_factor
         quiver(x_sampled, y_sampled, sample_u, sample_v, 'r'); 
         hold off; 
     end 
-    title("Champ de vitesse normalisé par rapport à u_{lb}")
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
+    %colorbar
     subplot(2,1,2); 
     % Getting pressure field & displaying it 
     p = rho.*pressure_calc_coeff;      
     contourf(p, 50);
-    title("Champ pression")
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
+    %colorbar
