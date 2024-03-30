@@ -12,15 +12,15 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters
-Re = 40;          % Reynolds number
-tau = 0.9;      % Relaxation time
-total_time = 0.1;  % Total simulation time
+Re = 100;          % Reynolds number
+tau = 1;      % Relaxation time
+total_time = 20;  % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
 %%% Geometric parameters.
-nx = 135;             % # of nodes in the x direction
-duct_ratio = 3;       % ratio for the rectangular domain such that Length = ratio*Height 
-cyl_size_ratio = 0.2; % Diam of cyl as a fraction of the duct height
+nx = 100;             % # of nodes in the x direction
+duct_ratio = 4;       % ratio for the rectangular domain such that Length = ratio*Height 
+cyl_size_ratio = 1/4; % Diam of cyl as a fraction of the duct height
 if mod(nx,duct_ratio) ~= 0
     error('nx must be divisible by duct_ratio to keep dx=dy');
 end
@@ -72,8 +72,8 @@ ystart = ny*rand(N,1);
 % It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
 % To not call a function use @placeholder
 % Functions are defined in /verif_assets/
-vis = {@show_aero_coeffs, @placeholder, @show_velocity, @placeholder};
-update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
+vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
+update_every_iter = 1; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
 show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
 
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------

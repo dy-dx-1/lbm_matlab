@@ -13,5 +13,5 @@ function show_aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, 
     fclose(fileID1); 
     fclose(fileID2);
     fclose(fileID3);
-    disp([cd, cl]); % not displaying cp cause array too big 
+    %disp([cd, cl]); % not displaying cp cause array too big 
   
