@@ -12,15 +12,15 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters
-Re = 100;          % Reynolds number
-tau = 1;      % Relaxation time
-total_time = 0.5;  % Total simulation time
+Re = 60;          % Reynolds number
+tau = 0.809;      % Relaxation time
+total_time = 20;  % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
 %%% Geometric parameters.
-nx = 150;             % # of nodes in the x direction
-duct_ratio = 3;       % ratio for the rectangular domain such that Length = ratio*Height 
-cyl_size_ratio = 1/4; % Diam of cyl as a fraction of the duct height
+nx = 200;             % # of nodes in the x direction
+duct_ratio = 1;       % ratio for the rectangular domain such that Length = ratio*Height 
+cyl_size_ratio = 1/8; % Diam of cyl as a fraction of the duct height
 if mod(nx,duct_ratio) ~= 0
     error('nx must be divisible by duct_ratio to keep dx=dy');
 end
@@ -36,7 +36,7 @@ omega = 1/tau;                    % relaxation parameter
 
 %%% Derived cylinder parameters
 [X,Y] = meshgrid(1:nx,1:ny);
-x_cyl = round(nx/3);                          % X position of center of cyl 
+x_cyl = round(nx/2);                          % X position of center of cyl 
 y_cyl = round(ny/2);                          % Y position of center of cyl
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
@@ -84,17 +84,17 @@ v = zeros(ny,nx);
 u(2:end-1,1) = u_lb;
 
 f = compute_feq(rho,u,v);
-f = apply_meso_obs(f, u_lb, b_cyl_indices); 
+f = apply_meso_obs(f, u_lb, b_cyl_indices, boundary_links); 
 
 % Main loop
 disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
-[u, v, rho] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, ... 
+[u, v, rho, f] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices, i_cyl_indices, a_cyl_indices, boundary_links, ... 
              dh, dt, pressure_calc_coeff, p_inf, p_divider, timesteps, calc_coeff, sample_factor, x_cyl, y_cyl, cyl_rad_nodes, x_sampled, y_sampled, ...
              update_every_iter, vis, show_vector_field);
 
 %%% Post simulation calculations ----------------------------------------------------------------------------------------------
 % Displaying speeds on the centerlines 
-display_center_speeds(u, v, u_lb, nx, ny); 
+%display_center_speeds(u, v, u_lb, nx, ny); 
 
 % Last visual update of iters 
 vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, pressure_calc_coeff, a_cyl_indices);
@@ -120,7 +120,9 @@ else
     axis equal; 
 end 
 % Streamlines 
-show_streamlines(x_sampled, y_sampled, u, v, sample_factor, xstart, ystart); 
+%show_streamlines(x_sampled, y_sampled, u, v, sample_factor, xstart, ystart); 
 
+% Coefficients 
+[cd, cl, cp] = aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider);
+disp(cd); 
 disp('**************Done!****************');
-disp('Done!');
