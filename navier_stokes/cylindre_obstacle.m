@@ -12,15 +12,15 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters
-Re = 60;          % Reynolds number
+Re = 100;          % Reynolds number
 tau = 0.809;      % Relaxation time
 total_time = 20;  % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
 %%% Geometric parameters.
 nx = 200;             % # of nodes in the x direction
-duct_ratio = 1;       % ratio for the rectangular domain such that Length = ratio*Height 
-cyl_size_ratio = 1/8; % Diam of cyl as a fraction of the duct height
+duct_ratio = 2;       % ratio for the rectangular domain such that Length = ratio*Height 
+cyl_size_ratio = 0.008/0.1; % Diam of cyl as a fraction of the duct height
 if mod(nx,duct_ratio) ~= 0
     error('nx must be divisible by duct_ratio to keep dx=dy');
 end
@@ -36,7 +36,7 @@ omega = 1/tau;                    % relaxation parameter
 
 %%% Derived cylinder parameters
 [X,Y] = meshgrid(1:nx,1:ny);
-x_cyl = round(nx/2);                          % X position of center of cyl 
+x_cyl = round(nx/4);                          % X position of center of cyl 
 y_cyl = round(ny/2);                          % Y position of center of cyl
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
