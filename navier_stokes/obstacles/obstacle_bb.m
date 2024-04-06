@@ -6,10 +6,13 @@ function f = obstacle_bb(f, b_obs_indices, boundary_links)
     % the actual frontier is located half a step away, so these nodes are technically fluid nodes that are about to collide with the obstacle.
     
     opp_cs = [ 1,   4,  5,  2,  3,  8,   9,   6,   7]; % indices of opposite speeds for bb 
-    f_reshaped = permute(f, [3 1 2]);
-    [~, ny, nx] = size(f_reshaped); 
-    for i=1:9
-        f_reshaped(i, b_obs_indices) = f_reshaped(opp_cs(i), b_obs_indices);
+    [ny, nx, ~] = size(f); 
+    for j=1:length(b_obs_indices)
+        [row, col] = ind2sub([ny, nx], b_obs_indices(j));
+        for i=1:9
+            f(row, col, i) = f(row, col, opp_cs(i));
+        end
+    end 
     % Iterating through all boundary nodes defined by b_obst_indices
     %{
     for i=1:length(b_obs_indices)
@@ -22,5 +25,4 @@ function f = obstacle_bb(f, b_obs_indices, boundary_links)
         end
     end
     %}
-    f = permute(f_reshaped, [2 3 1]);
 end

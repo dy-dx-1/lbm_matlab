@@ -5,22 +5,24 @@ function [u, v, rho, f] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices,
     density = vis{2};
     display_graphs = vis{3};
     cylinder = vis{4};
+    
     if update_every_iter==1
         for iter = 1:timesteps    
             % Collision
             f = collide_mrt(f, u, v, rho, omega);
             
             % Apply meso BCs
-            f = apply_meso_obs(f, u_lb, b_cyl_indices, boundary_links); 
+            f = apply_meso_obs(f, u_lb, a_cyl_indices, boundary_links); 
         
             % Calculation of drag and lift coefficient 
-            aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider); % calling the function to calculate the aero coeffs
-            
+            if (mod(iter, 10)) == 0  
+                aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider); % calling the function to calculate the aero coeffs
+            end
             % Streaming
             f = stream(f);    
             
             % Apply meso BCs
-            f = apply_meso_obs(f, u_lb, b_cyl_indices, boundary_links); 
+            f = apply_meso_obs(f, u_lb, a_cyl_indices, boundary_links); 
             
             % Apply macro variables
             [u,v,rho] = apply_macro_obs(f, u_lb, i_cyl_indices); 
@@ -36,7 +38,7 @@ function [u, v, rho, f] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices,
             
             % VISUALIZATION & progress tracking 
             if (mod(iter,round(timesteps/10))==0)
-                disp(['Running ... ' num2str(iter/timesteps*100) '% completed']);
+                disp(['Running ... ' round(num2str(iter/timesteps*100)) '% completed']);
             end
             
             % calling the function to display the velocity||pressure||both field, putting all params even though they may not be used depending on the function 
@@ -53,16 +55,17 @@ function [u, v, rho, f] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices,
             f = collide_mrt(f, u, v, rho, omega);
             
             % Apply meso BCs
-            f = apply_meso_obs(f, u_lb, b_cyl_indices, boundary_links); 
+            f = apply_meso_obs(f, u_lb, a_cyl_indices, boundary_links); 
         
             % Calculation of drag and lift coefficient 
-            aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider); % calling the function to calculate the aero coeffs
-            
+            if (mod(iter, 10)) == 0  
+                aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider); % calling the function to calculate the aero coeffs
+            end 
             % Streaming
             f = stream(f);    
             
             % Apply meso BCs
-            f = apply_meso_obs(f, u_lb, b_cyl_indices, boundary_links); 
+            f = apply_meso_obs(f, u_lb, a_cyl_indices, boundary_links); 
             
             % Apply macro variables
             [u,v,rho] = apply_macro_obs(f, u_lb, i_cyl_indices); 
@@ -72,7 +75,7 @@ function [u, v, rho, f] = run_LBM_loop(f, u, v, rho, omega, u_lb, b_cyl_indices,
             
             % VISUALIZATION & progress tracking 
             if (mod(iter,round(timesteps/10))==0)
-                disp(['Running ... ' num2str(iter/timesteps*100) '% completed']);
+                disp(['Running ... ' round(num2str(iter/timesteps*100)) '% completed']);
                 % Sanity check that the simulation is working, i.e checking that all non boundary nodes in the u matrix are not NaN
                 if (any(isnan(u(2:end-1,2:end-1))))
                     disp('!!!!!!!!!!!!!!!---- Error: NaNs in u matrix. Exiting ----!!!!!!!!!!!!!!!');

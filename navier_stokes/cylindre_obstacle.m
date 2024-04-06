@@ -3,8 +3,10 @@
 % and modified by Nicolas Sarabia-Benoit (nicolas.sarabia-benoit@polymtl.ca) in the context
 % of the course MEC3900 at Polytechnique Montreal.
 
-clear;close all;clc;
-
+clear;close all;clc;fclose('all'); 
+delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CD.txt'
+delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CL.txt'
+delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CP.txt'
 addpath basic
 addpath bc
 addpath turbulence
@@ -12,15 +14,15 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters
-Re = 100;          % Reynolds number
-tau = 0.809;      % Relaxation time
-total_time = 20;  % Total simulation time
+Re = 900;          % Reynolds number
+tau = 0.62;       % Relaxation time
+total_time = 5;  % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
 %%% Geometric parameters.
-nx = 200;             % # of nodes in the x direction
-duct_ratio = 2;       % ratio for the rectangular domain such that Length = ratio*Height 
-cyl_size_ratio = 0.008/0.1; % Diam of cyl as a fraction of the duct height
+nx = 250;             % # of nodes in the x direction
+duct_ratio = 1;       % ratio for the rectangular domain such that Length = ratio*Height 
+cyl_size_ratio = 0.1; % Diam of cyl as a fraction of the duct height
 if mod(nx,duct_ratio) ~= 0
     error('nx must be divisible by duct_ratio to keep dx=dy');
 end
@@ -36,7 +38,7 @@ omega = 1/tau;                    % relaxation parameter
 
 %%% Derived cylinder parameters
 [X,Y] = meshgrid(1:nx,1:ny);
-x_cyl = round(nx/4);                          % X position of center of cyl 
+x_cyl = round(nx/5);                          % X position of center of cyl 
 y_cyl = round(ny/2);                          % Y position of center of cyl
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
 cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
@@ -58,10 +60,8 @@ p_divider = 0.5*rho0*u_lb*u_lb; % Such that Cp = (p-p_inf)/p_divider
 
 %%% Prepping for visualization (to avoid loop calculations)
 % Velocity vector field (quiver)
-sample_factor = 3;             % To have a less dense quiver field
+sample_factor = 8;             % To have a less dense quiver field
 [x_sampled, y_sampled] = meshgrid(1:sample_factor:nx, 1:sample_factor:ny); 
-x_sampled = flipud(x_sampled); 
-y_sampled = flipud(y_sampled); % flipped to match the image display
 % Streamlines
 N = 75; % number of seed locations ; used to display streamlines 
 xstart = nx*rand(N,1); 
@@ -72,9 +72,9 @@ ystart = ny*rand(N,1);
 % It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
 % To not call a function use @placeholder
 % Functions are defined in /verif_assets/
-vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
+vis = {@show_aero_coeffs, @placeholder, @show_velocity_and_pressure, @placeholder};
 update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
-show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
+show_vector_field = 1; % 1 to show velocity quiver, 0 to not 
 
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------
 % Initialization
@@ -98,31 +98,31 @@ disp(['Simulation started, running ' num2str(timesteps) ' timesteps...']);
 
 % Last visual update of iters 
 vis{3}(show_vector_field, u, v, u_lb, sample_factor, x_sampled, y_sampled, rho, pressure_calc_coeff, a_cyl_indices);
-fig = gcf; 
-ax = fig.Children; 
-if numel(ax) ~= 1 % checking if were displaying only velocity or velocity and pressure 
-    subplot(2,1,1);
-    title("Champ de vitesse") 
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
-    subplot(2,1,2); 
-    title("Champ de pression") 
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
-else 
-    xlabel("Noeuds en X") 
-    ylabel("Noeuds en Y") 
-    colorbar
-    axis equal; 
-end 
+fig = findobj('type', 'figure'); % Find all figure objects
+if numel(fig) == 2 % Check if there are two figures
+    ax1 = fig(1).Children; % Axes of the first figure
+    ax2 = fig(2).Children; % Axes of the second figure
+
+    % Formatting for the first figure
+    title(ax1, "Champ de pression");
+    xlabel(ax1, "Noeuds en X");
+    ylabel(ax1, "Noeuds en Y");
+    colorbar(ax1);
+    axis(ax1, 'equal');
+
+    % Formatting for the second figure
+    title(ax2, "Champ de vitesse");
+    xlabel(ax2, "Noeuds en X");
+    ylabel(ax2, "Noeuds en Y");
+    colorbar(ax2);
+    axis(ax2, 'equal');
+else
+    xlabel("Noeuds en X");
+    ylabel("Noeuds en Y");
+    colorbar;
+    axis equal;
+end
 % Streamlines 
 %show_streamlines(x_sampled, y_sampled, u, v, sample_factor, xstart, ystart); 
 
-% Coefficients 
-[cd, cl, cp] = aero_coeffs(f, b_cyl_indices, boundary_links, dh, dt, calc_coeff, rho, pressure_calc_coeff, p_inf, p_divider);
-disp(cd); 
 disp('**************Done!****************');
