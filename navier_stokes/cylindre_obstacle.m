@@ -19,6 +19,15 @@ tau = 0.62;       % Relaxation time
 total_time = 5;   % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
+%%% Visualization choices 
+% This is a cell array that contains the visualization options for the simulation
+% It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
+% To not call a function use @placeholder
+% Functions are defined in /verif_assets/
+vis = {@show_aero_coeffs, @placeholder, @show_velocity_and_pressure, @placeholder};
+update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
+show_vector_field = 1; % 1 to show velocity quiver, 0 to not 
+
 %%% Geometric parameters.
 nx = 250;             % # of nodes in the x direction
 duct_ratio = 1;       % ratio for the rectangular domain such that Length = ratio*Height 
@@ -66,15 +75,6 @@ sample_factor = 8;             % To have a less dense quiver field
 N = 75; % number of seed locations ; used to display streamlines 
 xstart = nx*rand(N,1); 
 ystart = ny*rand(N,1);
-
-%%% Visualization choices 
-% This is a cell array that contains the visualization options for the simulation
-% It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
-% To not call a function use @placeholder
-% Functions are defined in /verif_assets/
-vis = {@show_aero_coeffs, @placeholder, @show_velocity_and_pressure, @placeholder};
-update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
-show_vector_field = 1; % 1 to show velocity quiver, 0 to not 
 
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------
 % Initialization
