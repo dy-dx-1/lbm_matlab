@@ -19,22 +19,23 @@ tau = 0.62;       % Relaxation time
 total_time = 5;   % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
-%%% Visualization choices 
-% This is a cell array that contains the visualization options for the simulation
-% It needs to respect the following format: {aero_coeffs, density, velocity||pressure||velocity_pressure, show_shape}
-% To not call a function use @placeholder
-% Functions are defined in /verif_assets/
-vis = {@show_aero_coeffs, @placeholder, @show_velocity_and_pressure, @placeholder};
-update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation, use 0 for large simulations
-show_vector_field = 1; % 1 to show velocity quiver, 0 to not 
-
-%%% Geometric parameters.
+%%% Geometric parameters
 nx = 250;             % # of nodes in the x direction
 duct_ratio = 1;       % ratio for the rectangular domain such that Length = ratio*Height 
 cyl_size_ratio = 0.1; % Diam of cyl as a fraction of the duct height
 if mod(nx,duct_ratio) ~= 0
     error('nx must be divisible by duct_ratio to keep dx=dy');
 end
+
+%%% Visualization parameters 
+% This is a cell array that contains the visualization options for the simulation
+% It needs to respect the following format: 
+% {show_aero_coeffs, show_density, show_[velocity||pressure||velocity_and_pressure], show_shape}
+% To turn off a visualisation option and call an empty function use @placeholder
+% Functions are defined in /verif_assets/
+vis = {@show_aero_coeffs, @placeholder, @show_velocity_and_pressure, @placeholder};
+update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation
+show_vector_field = 1; % 1 to show velocity quiver, 0 to not 
 
 %%% Derived simulation parameters
 ny = nx/duct_ratio; 
