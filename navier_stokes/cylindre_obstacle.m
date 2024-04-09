@@ -14,9 +14,9 @@ addpath verif_assets
 addpath obstacles
 
 %%% Base parameters
-Re = 900;          % Reynolds number
+Re = 900;         % Reynolds number
 tau = 0.62;       % Relaxation time
-total_time = 5;  % Total simulation time
+total_time = 5;   % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
 %%% Geometric parameters.
