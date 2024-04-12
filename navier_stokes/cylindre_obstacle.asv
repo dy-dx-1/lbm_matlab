@@ -16,7 +16,7 @@ addpath obstacles
 %%% Base parameters
 Re = 3000;         % Reynolds number
 tau = 0.52;       % Relaxation time
-total_time = 10;   % Total simulation time
+total_time = 1;   % Total simulation time
 rho0 = 1;         % Initial density (adim)
 
 %%% Geometric parameters
@@ -33,7 +33,7 @@ end
 % {show_aero_coeffs, show_density, show_[velocity||pressure||velocity_and_pressure], show_shape}
 % To turn off a visualisation option and call an empty function use @placeholder
 % Functions are defined in /verif_assets/
-vis = {@placeholder, @placeholder, @show_velocity, @show_shape};
+vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
 update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation
 show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
 
@@ -72,6 +72,10 @@ p_divider = 0.5*rho0*u_lb*u_lb; % Such that Cp = (p-p_inf)/p_divider
 % Velocity vector field (quiver)
 sample_factor = 8;             % To have a less dense quiver field
 [x_sampled, y_sampled] = meshgrid(1:sample_factor:nx, 1:sample_factor:ny); 
+% Streamlines
+N = 75; % number of seed locations ; used to display streamlines 
+xstart = nx*rand(N,1); 
+ystart = ny*rand(N,1);
 
 %%% Simulation ---------------------------------------------------------------------------------------------------------------------
 % Initialization
@@ -120,6 +124,6 @@ else
     axis equal;
 end
 % Streamlines 
-show_streamlines(x_sampled, y_sampled, u, v, sample_factor); 
-show_shape(x_cyl, y_cyl, cyl_rad_nodes); 
+show_streamlines(x_sampled, y_sampled, u, v, sample_factor, xstart, ystart); 
+show_shape(x_cyl, y_cyl, cyl_rad_nodes)
 disp('**************Done!****************');

@@ -1,4 +1,4 @@
-function show_streamlines(x_sampled, y_sampled, u, v, sample_factor)
+function show_streamlines(x_sampled, y_sampled, u, v, sample_factor, xstart, ystart)
     fig = gcf; 
     ax = fig.Children; 
     if numel(ax) ~= 2 % checking if were displaying only velocity or velocity and pressure 
@@ -8,6 +8,6 @@ function show_streamlines(x_sampled, y_sampled, u, v, sample_factor)
     sample_v = v(1:sample_factor:end, 1:sample_factor:end);
     hold on; 
     ss = streamslice(x_sampled, y_sampled, sample_u, sample_v);
-    set(ss, 'Color', 'k'); 
+    se
     hold off; 
 end 
