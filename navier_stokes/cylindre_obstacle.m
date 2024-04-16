@@ -12,7 +12,6 @@ addpath bc
 addpath turbulence
 addpath verif_assets
 addpath obstacles
-
 %%% Base parameters
 Re = 3000;         % Reynolds number
 tau = 0.52;       % Relaxation time
@@ -33,8 +32,8 @@ end
 % {show_aero_coeffs, show_density, show_[velocity||pressure||velocity_and_pressure], show_shape}
 % To turn off a visualisation option and call an empty function use @placeholder
 % Functions are defined in /verif_assets/
-vis = {@placeholder, @placeholder, @show_velocity, @show_shape};
-update_every_iter = 0; % 1 to update every iteration, 0 to update every 10% of the simulation
+vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
+update_every_iter = 1; % 1 to update every iteration, 0 to update every 10% of the simulation
 show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
 
 %%% Derived simulation parameters
@@ -51,7 +50,7 @@ omega = 1/tau;                    % relaxation parameter
 x_cyl = round(nx/5);                          % X position of center of cyl 
 y_cyl = round(ny/2);                          % Y position of center of cyl
 cyl_rad_nodes = round(cyl_size_ratio*ny*0.5); % cyl radius expressed in nodes
-cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'circle');  % Matrix where 1 represents a cylinder node 
+cyl_matrix = generate_obstacle_matrix(X, Y, x_cyl, y_cyl, cyl_rad_nodes, 'rectangle');  % Matrix where 1 represents a cylinder node 
 boundary_cyl_matrix = mark_boundary_nodes(cyl_matrix);                               % Matrix where 1 represents ONLY the boundary of the cylinder
 boundary_links = find_boundary_links(cyl_matrix-boundary_cyl_matrix);                % Getting the velocity links for each boundary node, used for momentum exchange
 % Prepping linear indexes of non zero elements, will be used to easily index on cylinder https://www.mathworks.com/help/matlab/ref/find.htm
