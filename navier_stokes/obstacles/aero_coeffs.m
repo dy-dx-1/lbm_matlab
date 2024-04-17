@@ -30,7 +30,6 @@ function [cd, cl, cp] = aero_coeffs(f, obst_indices, boundary_links, dh, dt, cal
     end
     F = delta_P; % [Fx, Fy] 
     %{
-    NOTE: CHECK AND CONFIRM UNIT MATCHES WITH CALC_COEFF!!!!!!!!!
     Dimensionnal approach would be: 
     %delta_P = delta_P.*(dh^2); 
     %F = delta_P./dt;  % in the shape of [Fx Fy] 

@@ -4,9 +4,9 @@
 % of the course MEC3900 at Polytechnique Montreal.
 
 clear;close all;clc;fclose('all'); 
-delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CD.txt'
-delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CL.txt'
-delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CP.txt'
+%delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CD.txt'
+%delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CL.txt'
+%delete 'C:/Users/Nicolas/Desktop/PI3_calcs/results_coeffs/CP.txt'
 addpath basic
 addpath bc
 addpath turbulence
@@ -34,7 +34,7 @@ end
 % Functions are defined in /verif_assets/
 vis = {@placeholder, @placeholder, @show_velocity, @placeholder};
 update_every_iter = 1; % 1 to update every iteration, 0 to update every 10% of the simulation
-show_vector_field = 0; % 1 to show velocity quiver, 0 to not 
+show_vector_field = 1; % 1 to show velocity quiver, 0 to not 
 
 %%% Derived simulation parameters
 ny = nx/duct_ratio; 

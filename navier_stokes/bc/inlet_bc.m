@@ -1,9 +1,8 @@
 function f = inlet_bc(f, u_lb, side)
 % D2Q9
 % Applies an inlet BC to the distirbution functions in 2d matrix form.
-% Assumes boundary nodes are located on the boundary (as opposed to half-cell away).
 
-if strcmp(side, 'west') % West inlet, fixed velocity. BB method 
+if strcmp(side, 'west') % West inlet, fixed velocity. halfway BB method 
     rho_boundary = 1; % densite constante, ecoulement incompressible 
     cs = sqrt(1/3); 
 

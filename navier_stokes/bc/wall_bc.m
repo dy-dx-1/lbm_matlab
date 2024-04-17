@@ -1,7 +1,6 @@
 function f = wall_bc(f, side)
 % D2Q9
 % Applies a wall bounceback BC to the distribution functions in 2d matrix form.
-% Assumes boundary nodes are located on the boundary (as opposed to half-cell away).
 
 if strcmp(side, 'north') % North wall.
     f(end,:,5) = f(end,:,3);
