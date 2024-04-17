@@ -118,6 +118,7 @@ else
     colorbar;
     axis equal;
 end
+
 % Streamlines 
 show_streamlines(x_sampled, y_sampled, u, v, sample_factor); 
 show_shape(x_cyl, y_cyl, cyl_rad_nodes); 
