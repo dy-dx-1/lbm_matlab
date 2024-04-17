@@ -35,19 +35,12 @@ tau = 0.535; % relaxation time
 nu_lb = (tau-0.5)/3; % kinematic viscosity in lb units
 
 % Derived discrete parameters.
-dh = 1/(nodes-1); % using L_p here gives wrong results? maybe
+dh = 1/(nodes-1); 
 dt = nu_lb*(dh^2)*Re;
 
 omega = 1 / tau;
 u_lb = dt / dh;
 timesteps = round(total_time/dt); 
-
-% Displaying info 
-%placeholderwhile testing%%%%%%%%%%%%%
-L_p = NaN; 
-U_p = NaN;
-nu_p = NaN;
-display_sim_info(L_p, U_p, nodes, timesteps, Re, dh, dt, u_lb, tau);
 
 
 % Initialize.
